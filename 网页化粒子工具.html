@@ -232,13 +232,53 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 }
 .stage canvas{display:block;width:100%;height:100%;flex:1 1 auto;min-height:0;cursor:grab;touch-action:none}
 .stage canvas:active{cursor:grabbing}
-.stage-bar{
-  flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:8px 10px;
-  background:rgba(12,15,20,.86);backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,.09);
+/* ---------- 预览设置浮窗（浮在 3D 展示窗口上，可拖动 / 可收起） ---------- */
+.stage-ctl{
+  position:absolute;z-index:6;width:206px;max-height:calc(100% - 20px);
+  background:rgba(12,15,20,.9);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.13);border-radius:11px;
+  box-shadow:0 14px 34px -18px rgba(0,0,0,.75);
+  display:flex;flex-direction:column;overflow:hidden;
   color:#c9ced8;font-size:11px;
 }
-.stage-bar .grow{flex:1}
-.stage-bar .stat{font-family:var(--mono);font-size:10px;color:#7f8894;white-space:nowrap}
+.stage-ctl .sc-head{
+  display:flex;align-items:center;gap:6px;padding:6px 8px;
+  background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.09);
+  cursor:move;user-select:none;
+}
+.stage-ctl.collapsed .sc-head{border-bottom:none}
+.stage-ctl .sc-title{font-size:11px;font-weight:700;color:#e6ebf2}
+.stage-ctl .sc-head .grow{flex:1}
+.sc-min{
+  width:23px;height:20px;border-radius:6px;line-height:1;
+  border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#c9ced8;font-size:12px;
+}
+.sc-min:hover{background:rgba(255,255,255,.16);color:#fff}
+.stage-ctl .sc-body{
+  display:flex;flex-direction:column;gap:7px;padding:9px 10px;
+  min-height:0;overflow-y:auto;
+}
+.stage-ctl.collapsed .sc-body{display:none}
+.stage-ctl .sc-sep{height:1px;background:rgba(255,255,255,.09)}
+.stage-ctl .sc-tools{display:flex;flex-wrap:wrap;gap:5px}
+.stage-ctl select{height:25px;max-width:100%}
+.stage-ctl .sc-stat{display:flex;justify-content:space-between;gap:8px}
+.stage-ctl .sc-stat .stat{font-family:var(--mono);font-size:10px;color:#7f8894;white-space:nowrap}
+/* 光照调试小节（可折叠） */
+.stage-ctl .sc-sec{border-top:1px solid rgba(255,255,255,.09);padding-top:8px}
+.stage-ctl .sc-sh{
+  display:flex;align-items:center;gap:5px;width:100%;padding:0 0 7px;
+  background:none;border:none;color:#cfd6e0;font-size:10.5px;font-weight:600;text-align:left;
+}
+.stage-ctl .sc-sh:hover{color:#fff}
+.stage-ctl .sc-sh i{font-style:normal;color:#5f6b7a;display:inline-block;transition:.14s}
+.stage-ctl .sc-sec.closed .sc-sh{padding-bottom:0}
+.stage-ctl .sc-sec.closed .sc-sh i{transform:rotate(-90deg)}
+.stage-ctl .sc-sec.closed .sc-sb{display:none}
+.stage-ctl .sc-sb{display:flex;flex-direction:column;gap:7px}
+.stage-ctl .sc-check{display:flex;align-items:center;gap:6px;font-size:10px;color:#9aa4b2;cursor:pointer;line-height:1.4}
+.stage-ctl .sc-check input{width:14px;height:14px;flex:0 0 auto;accent-color:var(--accent);cursor:pointer}
+.stage-ctl .sc-hint{font-size:9.5px;color:#6f7887;line-height:1.5}
 .tbtn{
   height:26px;padding:0 9px;border-radius:7px;border:1px solid rgba(255,255,255,.13);
   background:rgba(255,255,255,.05);color:#d6dae2;display:inline-flex;align-items:center;gap:5px;font-size:11px;
@@ -275,20 +315,13 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
   background:none;border:none;padding:0;height:auto;
 }
 .tex-panel .tp-clear:hover{color:var(--accent)}
-/* ---------- 预览视角控制（旋转 / 俯仰 / 缩放） ---------- */
-.view-ctl{
-  position:absolute;top:10px;right:10px;width:176px;z-index:3;
-  background:rgba(12,15,20,.82);backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:9px 10px;
-  display:flex;flex-direction:column;gap:8px;
-}
-.view-ctl.hidden{display:none}
-.view-ctl .vc-row{display:flex;align-items:center;gap:8px}
-.view-ctl .vc-row>span{font-size:10px;color:#9aa4b2;flex:0 0 auto;width:24px}
-.view-ctl .vc-row>input{height:3px;background:rgba(255,255,255,.22)}
-.view-ctl .vc-row>input::-webkit-slider-thumb{background:#e6ebf2;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
-.view-ctl .vc-row>input::-webkit-slider-thumb:hover{background:var(--accent)}
-.view-ctl .vc-row>b{
+/* ---------- 预览设置浮窗内的视角控制（旋转 / 俯仰 / 缩放） ---------- */
+.stage-ctl .vc-row{display:flex;align-items:center;gap:7px}
+.stage-ctl .vc-row>span{font-size:10px;color:#9aa4b2;flex:0 0 auto;width:26px}
+.stage-ctl .vc-row>input{height:3px;background:rgba(255,255,255,.22);flex:1 1 auto;min-width:0}
+.stage-ctl .vc-row>input::-webkit-slider-thumb{background:#e6ebf2;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+.stage-ctl .vc-row>input::-webkit-slider-thumb:hover{background:var(--accent)}
+.stage-ctl .vc-row>b{
   font-family:var(--mono);font-size:9.5px;color:#7f8894;font-weight:400;
   flex:0 0 34px;text-align:right;
 }
@@ -321,6 +354,14 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 .row .val{
   font-family:var(--mono);font-size:10px;color:var(--muted);min-width:42px;text-align:right;flex:0 0 auto;
 }
+/* 数值输入框：滑条之外的精确输入（直接键入数值） */
+.row input.val{
+  width:58px;flex:0 0 auto;height:24px;padding:0 6px;border:1px solid var(--line-strong);border-radius:6px;
+  background:var(--surface);font-family:var(--mono);font-size:10.5px;color:var(--ink-2);text-align:right;
+  outline:none;transition:border-color .14s,box-shadow .14s;
+}
+.row input.val:hover{border-color:var(--muted)}
+.row input.val:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(17,19,24,.07);color:var(--ink)}
 input[type=range]{
   -webkit-appearance:none;appearance:none;height:3px;background:var(--line-strong);border-radius:3px;
   flex:1;min-width:0;outline:none;
@@ -773,30 +814,51 @@ body.show-on{overflow:hidden}
     <div class="hint-badge" id="hintBadge">拖拽旋转 · 滚轮缩放</div>
     <div class="tex-panel hidden" id="texPanel">
       <div class="tp-title">原版粒子贴图</div>
-      <div class="tp-note" id="texStatus">未导入 —— 当前使用几何近似形状</div>
-      <button class="tp-btn" id="texZipBtn">选择客户端 .jar / 资源包 .zip</button>
-      <button class="tp-btn" id="texDirBtn">选择 particle 贴图文件夹</button>
-      <div class="tp-tip">贴图只在你的浏览器里读取，不会上传到任何地方。路径参考：.minecraft/versions/&lt;版本&gt;/&lt;版本&gt;.jar</div>
-      <button class="tp-clear" id="texClearBtn">清除已导入贴图</button>
+      <div class="tp-note" id="texStatus">已内置原版贴图，正在载入 …</div>
+      <button class="tp-btn" id="texZipBtn">导入其它版本的 .jar / 资源包 .zip</button>
+      <button class="tp-btn" id="texDirBtn">导入 particle 贴图文件夹</button>
+      <div class="tp-tip">已内置 26.2 版原版粒子贴图（288 张），打开即可用；导入其它版本会整体覆盖。贴图只在你的浏览器里读取，不会上传。路径参考：.minecraft/versions/&lt;版本&gt;/&lt;版本&gt;.jar</div>
+      <button class="tp-clear" id="texClearBtn">恢复内置贴图</button>
     </div>
     <input type="file" id="texZipInput" accept=".zip,.jar" hidden>
     <input type="file" id="texDirInput" webkitdirectory multiple hidden>
-    <div class="view-ctl" id="viewCtl">
-      <div class="vc-row"><span>水平</span><input type="range" id="vcYaw" min="-3.14" max="3.14" step="0.005"><b id="vcYawV"></b></div>
-      <div class="vc-row"><span>俯仰</span><input type="range" id="vcPitch" min="-1.45" max="1.45" step="0.005"><b id="vcPitchV"></b></div>
-      <div class="vc-row"><span>缩放</span><input type="range" id="vcZoom" min="0.3" max="4" step="0.01"><b id="vcZoomV"></b></div>
-    </div>
-    <div class="stage-bar">
-      <button class="tbtn on" id="btnPlay">⏸ 暂停</button>
-      <select id="sceneSel" title="预览场景"></select>
-      <button class="tbtn on" id="btnAutoRot">自动转视角</button>
-      <button class="tbtn on" id="btnGrid">参考网格</button>
-      <button class="tbtn" id="btnReal" title="按粒子自身的贴图形状与游戏内真实尺寸（格）预览">MC 实机效果</button>
-      <button class="tbtn" id="btnTex" title="导入原版粒子贴图（本机读取，不上传）">原版贴图</button>
-      <button class="tbtn on" id="btnViewCtl">视角控制</button>
-      <span class="grow"></span>
-      <span class="stat" id="statParticles">0 粒子</span>
-      <span class="stat" id="statFps">-- FPS</span>
+    <!-- 预览设置：悬浮窗口（可拖动 / 可收起，不占用画面布局） -->
+    <div class="stage-ctl" id="stageCtl">
+      <div class="sc-head" id="scHead" title="按住拖动可移动 · 双击复位">
+        <span class="sc-title">预览设置</span>
+        <span class="grow"></span>
+        <button type="button" class="sc-min" id="scMin" title="收起 / 展开">–</button>
+      </div>
+      <div class="sc-body" id="scBody">
+        <div class="vc-row"><span>水平</span><input type="range" id="vcYaw" min="-3.14" max="3.14" step="0.005"><b id="vcYawV"></b></div>
+        <div class="vc-row"><span>俯仰</span><input type="range" id="vcPitch" min="-1.45" max="1.45" step="0.005"><b id="vcPitchV"></b></div>
+        <div class="vc-row"><span>缩放</span><input type="range" id="vcZoom" min="0.3" max="4" step="0.01"><b id="vcZoomV"></b></div>
+        <div class="sc-sec" id="scLightSec">
+          <button type="button" class="sc-sh" id="scLightHead"><i>▾</i>光照调试（模拟游戏内）</button>
+          <div class="sc-sb">
+            <div class="vc-row"><span>环境</span><select id="ltEnv" title="一键套用常见的游戏内光照环境"></select></div>
+            <div class="vc-row"><span title="方块光照等级（火把 / 荧石等方块光，0~15）">方块</span><input type="range" id="ltBlock" min="0" max="15" step="1" title="方块光照等级 0~15"><b id="ltBlockV">15</b></div>
+            <div class="vc-row"><span title="天空光照等级（露天白天 15，夜晚约 4）">天空</span><input type="range" id="ltSky" min="0" max="15" step="1" title="天空光照等级 0~15"><b id="ltSkyV">15</b></div>
+            <div class="vc-row"><span>天气</span><select id="ltWeather" title="下雨 / 雷暴按游戏规则压低天空光照"></select></div>
+            <label class="sc-check"><input type="checkbox" id="ltLit" checked>粒子受光照（发光类粒子自动豁免）</label>
+            <div class="sc-hint" id="ltHint">仅影响预览观感；游戏内光照由 MC 自动处理，导出代码不含光照。</div>
+          </div>
+        </div>
+        <div class="sc-sep"></div>
+        <div class="sc-tools">
+          <button class="tbtn on" id="btnPlay">⏸ 暂停</button>
+          <select id="sceneSel" title="预览场景"></select>
+          <button class="tbtn on" id="btnAutoRot">自动转视角</button>
+          <button class="tbtn on" id="btnGrid">参考网格</button>
+          <button class="tbtn on" id="btnSteve" title="在特效中心（原点）显示 MC 玩家史蒂夫，用于对照中心点的位置与大小">史蒂夫中心点</button>
+          <button class="tbtn" id="btnReal" title="按粒子自身的贴图形状与游戏内真实尺寸（格）预览">MC 实机效果</button>
+          <button class="tbtn" id="btnTex" title="已内置 26.2 原版粒子贴图；也可导入其它版本覆盖（本机读取，不上传）">原版贴图</button>
+        </div>
+        <div class="sc-stat">
+          <span class="stat" id="statParticles">0 粒子</span>
+          <span class="stat" id="statFps">-- FPS</span>
+        </div>
+      </div>
     </div>
     <div class="hgrip" data-pane="stage" title="拖拽调整窗口高度 · 双击复位"></div>
   </section>
@@ -1199,6 +1261,25 @@ const COLOR_KIND = {
   dust: "dust",
   dust_color_transition: "transition"
 };
+/* 每种粒子在 MC Java 里能配的「粒子参数」（决定检查器里显示哪些行）；
+   通用参数（数量/尺寸/扩散/速度/force）对所有类型都显示 */
+const PARTICLE_OPTS = {
+  dust: ["size"],
+  dust_color_transition: ["size"],
+  block: ["block"], block_marker: ["block"], falling_dust: ["block"],
+  dust_pillar: ["block"], block_crumble: ["block"],
+  item: ["item"],
+  sculk_charge: ["roll"],
+  shriek: ["delay"],
+  trail: ["duration"],
+  effect: ["power"], instant_effect: ["power"],
+  vibration: ["vibration"]
+};
+/* 确定性伪随机：同一粒子索引 + 通道 → 固定偏移（逐帧稳定，导出代码可复现） */
+function jit1(i, salt) {
+  const v = Math.sin(i * 127.1 + salt * 311.7) * 43758.5453;
+  return (v - Math.floor(v)) * 2 - 1;
+}
 
 /* =========================================================
    2. 形状生成器（全部归一化到最大半径 1）
@@ -2497,7 +2578,7 @@ function alignFlat(arr, n) {
    3. 图层模型
    ========================================================= */
 function newLayer(patch) {
-  return Object.assign({
+  const out = Object.assign({
     id: uid(),
     name: "新图层",
     enabled: true,
@@ -2527,7 +2608,22 @@ function newLayer(patch) {
     colorMode: "single",
     color1: "#7ce8ff",
     color2: "#ff4d2e",
-    dustScale: 1.0,
+    /* ---- MC Java 原版粒子生成参数（对应 level.addParticle / sendParticles /particle 的实参） ---- */
+    pSize: 1.0,                      // 粒子尺寸（格）：dust / dust_color_transition 的 scale；其他类型只影响预览显示
+    pSizeEnd: -1,                    // 结束尺寸（格），-1 = 与初始相同
+    pSpeed: 1.0,                     // 速度倍率（命令的 speed 参数；预览同步缩放运动幅度）
+    pSpreadX: 0,                     // 生成扩散范围 X（格）→ 命令的 xDist
+    pSpreadY: 0,                     // 生成扩散范围 Y（格）→ yDist
+    pSpreadZ: 0,                     // 生成扩散范围 Z（格）→ zDist
+    pForce: true,                    // force：超出 32 格也发送/显示（仅服务端命令有效）
+    pBlock: "minecraft:stone",       // block / block_marker / falling_dust / block_crumble 的方块
+    pItem: "minecraft:diamond",      // item 的物品
+    pRoll: 0,                        // sculk_charge 的翻转角（弧度）
+    pDelay: 0,                       // shriek 的延迟（tick）
+    pDuration: 20,                   // trail 的飞行时长（tick）
+    pPower: 0.5,                     // effect / instant_effect 的强度
+    pVibX: 0, pVibY: 64, pVibZ: 0,   // vibration 的目标坐标
+    pVibTicks: 20,                   // vibration 的到达时间（tick）
     texture: "",                     // 手动指定的原版贴图分组，空 = 按粒子名自动匹配
     path: [],                        // 3D 画板绘制的轨道：[[x,y,z], ...] 的笔画数组
     pathRev: 0,                      // 轨道版本号（用于形状缓存失效）
@@ -2547,6 +2643,12 @@ function newLayer(patch) {
     seqPhase: 0,                     // 启动相位错开（0~1），用于让多个图层依次启动
     seed: (Math.random() * 1e9) | 0
   }, patch || {});
+  // 兼容早期存档里的 dustScale（已更名为 pSize）与缺失的新字段，避免旧配置出现 NaN
+  if (patch && patch.pSize == null && patch.dustScale != null) out.pSize = patch.dustScale;
+  if (out.pSize == null) out.pSize = 1;
+  if (out.pSizeEnd == null) out.pSizeEnd = -1;
+  if (out.endRel == null) out.endRel = -1;
+  return out;
 }
 
 /* =========================================================
@@ -2566,14 +2668,14 @@ function magicCircle(o) {
       name: "外环", shape: "ring", particle: "dust", count: 300, radius: o.r1 || 2.35, thickness: 0.02,
       flow: o.spin1 == null ? 0.45 : o.spin1, seqPhase: 0,
       lifetime: 90, size: 6, sizeEnd: 1.5,
-      colorMode: "gradient", color1: o.c1, color2: o.c2, dustScale: 1.2
+      colorMode: "gradient", color1: o.c1, color2: o.c2, pSize: 1.2
     })),
     newLayer(Object.assign({}, base, {
       name: "内环", shape: "ring_thick", particle: "dust", count: 300, radius: o.r2 || 1.5, thickness: 0.02,
       flow: -(o.spin2 == null ? 0.7 : o.spin2), seqPhase: 0.035,
       stack: 3, stackGap: 0.18,                       // 三层叠成一圈有高度的环塔
       lifetime: 80, size: 6, sizeEnd: 1.5,
-      colorMode: "gradient", color1: o.c2, color2: "#ffffff", dustScale: 1.2
+      colorMode: "gradient", color1: o.c2, color2: "#ffffff", pSize: 1.2
     })),
     newLayer(Object.assign({}, base, {
       name: o.sigilName || "印记", shape: o.sigil || "star6", particle: "enchant", count: 260,
@@ -2585,7 +2687,7 @@ function magicCircle(o) {
       name: "符文", shape: "ripple", particle: "dust", count: 220, radius: 2.0, turns: 1.2,
       flow: 0.9, rise: 0.22, seqPhase: 0.14, seqStyle: "rings",
       lifetime: 55, size: 4.5, sizeEnd: 0.8,
-      colorMode: "gradient", color1: o.c1, color2: o.c2, dustScale: 1
+      colorMode: "gradient", color1: o.c1, color2: o.c2, pSize: 1
     })),
     newLayer(Object.assign({}, base, {
       name: "光柱", shape: "pillar", particle: "end_rod", count: 150, radius: 0.5, height: 3.6,
@@ -2597,7 +2699,7 @@ function magicCircle(o) {
       name: o.ringName || "图纹", shape: o.ringShape, particle: "dust", count: 240,
       radius: o.r4 || 2.7, thickness: 0.04, flow: o.ringFlow == null ? 0.22 : o.ringFlow,
       seqPhase: 0.055, lifetime: 80, size: 5.5, sizeEnd: 1.3,
-      colorMode: "gradient", color1: o.c2, color2: o.c1, dustScale: 1.1
+      colorMode: "gradient", color1: o.c2, color2: o.c1, pSize: 1.1
     })) : null
   ].filter(Boolean);
 }
@@ -2613,13 +2715,13 @@ function shapeGlyphCircle(o) {
     newLayer(Object.assign({}, base, {
       name: "外环", shape: "ring", particle: "dust", count: 280, radius: o.r1 || 2.5, thickness: 0.02,
       flow: 0.4, seqPhase: 0, lifetime: 90, size: 5.5, sizeEnd: 1.4,
-      colorMode: "gradient", color1: o.c1, color2: o.c2, dustScale: 1.2
+      colorMode: "gradient", color1: o.c1, color2: o.c2, pSize: 1.2
     })),
     newLayer(Object.assign({}, base, {
       name: o.name || "图纹", shape: o.shape, particle: "dust", count: 320,
       radius: o.r2 || 1.8, thickness: 0.04, flow: f, seqPhase: 0.07,
       lifetime: 80, size: 6, sizeEnd: 1.5,
-      colorMode: "gradient", color1: o.c2, color2: "#ffffff", dustScale: 1.3
+      colorMode: "gradient", color1: o.c2, color2: "#ffffff", pSize: 1.3
     })),
     newLayer(Object.assign({}, base, {
       name: "反向辉光", shape: o.shape, particle: "enchant", count: 240,
@@ -2631,7 +2733,7 @@ function shapeGlyphCircle(o) {
     newLayer(Object.assign({}, base, {
       name: "符文", shape: "ripple", particle: "dust", count: 200, radius: 2.15, turns: 1.2,
       flow: 0.85, rise: 0.2, seqPhase: 0.14, seqStyle: "rings", lifetime: 55, size: 4.5, sizeEnd: 0.8,
-      colorMode: "gradient", color1: o.c1, color2: o.c2, dustScale: 1
+      colorMode: "gradient", color1: o.c1, color2: o.c2, pSize: 1
     })),
     newLayer(Object.assign({}, base, {
       name: "光柱", shape: "pillar", particle: "end_rod", count: 140, radius: 0.5, height: 3.4,
@@ -2711,13 +2813,13 @@ function geoCircle(o) {
     newLayer(Object.assign({}, base, {
       name: "外环", shape: "ring", particle: "dust", count: 300, radius: R * 1.5, thickness: 0.02,
       flow: 0.42, seqPhase: P[0], seqStyle: "sweep", lifetime: 90, size: 5.5, sizeEnd: 1.4,
-      colorMode: "gradient", color1: o.c1, color2: o.c2, dustScale: 1.2
+      colorMode: "gradient", color1: o.c1, color2: o.c2, pSize: 1.2
     })),
     newLayer(Object.assign({}, base, geo, {
       name: o.name || "几何", particle: "dust", count: 340, radius: R,
       flow: 0.3, seqPhase: P[1], lift: solid ? 0.34 : 0,
       lifetime: 80, size: 6, sizeEnd: 1.5,
-      colorMode: "gradient", color1: o.c2, color2: "#ffffff", dustScale: 1.3
+      colorMode: "gradient", color1: o.c2, color2: "#ffffff", pSize: 1.3
     })),
     newLayer(Object.assign({}, base, geo, {
       name: "上层", particle: "enchant", count: 260, radius: R * 1.02,
@@ -2728,7 +2830,7 @@ function geoCircle(o) {
     newLayer(Object.assign({}, base, {
       name: "符文", shape: "ripple", particle: "dust", count: 200, radius: R * 1.28, turns: 1.2,
       flow: 0.85, rise: 0.22, seqPhase: P[3], seqStyle: "rings", lifetime: 55, size: 4.5, sizeEnd: 0.8,
-      colorMode: "gradient", color1: o.c1, color2: o.c2, dustScale: 1
+      colorMode: "gradient", color1: o.c1, color2: o.c2, pSize: 1
     })),
     boostLayer,                                  // ← 与启动方式对应的强化层
     newLayer(Object.assign({}, base, {
@@ -2782,71 +2884,71 @@ const PRESETS = [
   { name: "流光轨迹", cat: "基础", tags: ["轨道", "跑光", "线路", "行进"], build: () => [
     newLayer({ name: "底纹", shape: "ring", particle: "dust", count: 220, radius: 2.0, thickness: 0.02,
       spin: 0, lifetime: 90, size: 3, sizeEnd: 1.2, alpha: 0.3,
-      colorMode: "single", color1: "#2b5f7a", dustScale: 0.9 }),
+      colorMode: "single", color1: "#2b5f7a", pSize: 0.9 }),
     newLayer({ name: "流光", shape: "ring", particle: "dust", count: 260, radius: 2.0, thickness: 0.02,
       flow: 0.55, spin: 0, lifetime: 70, size: 7, sizeEnd: 1.5, fadeIn: 0.04, fadeOut: 0.62,
-      colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", dustScale: 1.3 })
+      colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", pSize: 1.3 })
   ] },
   { name: "霓虹光环", cat: "基础", tags: ["环", "光", "neon"], build: () => [
     newLayer({ name: "光环", shape: "ring", particle: "end_rod", count: 180, radius: 1.8, thickness: 0.06,
       expand: 0.1, rise: 0.0, spin: 0.6, lifetime: 30, size: 6, sizeEnd: 2, colorMode: "single", color1: "#7ce8ff" }),
     newLayer({ name: "尘埃", shape: "ring", particle: "dust", count: 240, radius: 1.4, thickness: 0.28,
       expand: 0.35, rise: 0.35, spin: -0.35, lifetime: 55, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#ff4d2e", color2: "#ffd6a5", dustScale: 1.2 })
+      colorMode: "gradient", color1: "#ff4d2e", color2: "#ffd6a5", pSize: 1.2 })
   ] },
   { name: "光柱升腾", cat: "基础", tags: ["柱", "竖直", "beam"], build: () => [
     newLayer({ name: "光柱", shape: "pillar", particle: "end_rod", count: 220, radius: 0.6, height: 4.6,
       spin: 0.2, rise: 0.9, lifetime: 34, size: 7, sizeEnd: 2, colorMode: "single", color1: "#a8f0ff" }),
     newLayer({ name: "尘屑", shape: "cylinder", particle: "dust", count: 200, radius: 0.9, height: 4.2, thickness: 0.1,
       rise: 1.4, spin: -0.3, lifetime: 46, size: 4, sizeEnd: 0.8,
-      colorMode: "gradient", color1: "#5ad1ff", color2: "#ffffff", dustScale: 1 })
+      colorMode: "gradient", color1: "#5ad1ff", color2: "#ffffff", pSize: 1 })
   ] },
   { name: "悬浮球体", cat: "基础", tags: ["球", "sphere"], build: () => [
     newLayer({ name: "球壳", shape: "shell", particle: "dust", count: 420, radius: 1.7, thickness: 0.22,
       pulse: 0.06, spin: 0.3, lifetime: 60, size: 5, sizeEnd: 1.2,
-      colorMode: "gradient", color1: "#7ce8ff", color2: "#b388ff", dustScale: 1.1 })
+      colorMode: "gradient", color1: "#7ce8ff", color2: "#b388ff", pSize: 1.1 })
   ] },
   { name: "直线光带", cat: "基础", tags: ["线", "line", "轨迹"], build: () => [
     newLayer({ name: "光带", shape: "line", particle: "dust", count: 320, radius: 2.4, thickness: 0.06,
       spin: 0.5, rise: 0.2, lifetime: 40, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#2ee6a8", color2: "#3b82f6", dustScale: 1.2 })
+      colorMode: "gradient", color1: "#2ee6a8", color2: "#3b82f6", pSize: 1.2 })
   ] },
   { name: "心形轮廓", cat: "基础", tags: ["爱心", "heart", "轮廓"], build: () => [
     newLayer({ name: "轮廓", shape: "heart_outline", particle: "dust", count: 460, radius: 1.7, thickness: 0.05,
       spin: 0.2, pulse: 0.1, lifetime: 55, size: 5, sizeEnd: 1.5,
-      colorMode: "gradient", color1: "#ff2e63", color2: "#ff9ec4", dustScale: 1.2 })
+      colorMode: "gradient", color1: "#ff2e63", color2: "#ff9ec4", pSize: 1.2 })
   ] },
   { name: "立方体框架", cat: "基础", tags: ["立方", "cube", "几何"], build: () => [
     newLayer({ name: "框架", shape: "cube", particle: "dust", count: 360, radius: 1.9,
       spin: 0.4, lifetime: 50, size: 5, sizeEnd: 1.2,
-      colorMode: "gradient", color1: "#ffd166", color2: "#ff4d2e", dustScale: 1.1 }),
+      colorMode: "gradient", color1: "#ffd166", color2: "#ff4d2e", pSize: 1.1 }),
     newLayer({ name: "顶点光", shape: "octahedron", particle: "end_rod", count: 60, radius: 1.7,
       spin: -0.3, lifetime: 28, size: 6, sizeEnd: 2, colorMode: "single", color1: "#fff3b0" })
   ] },
   { name: "圆环体", cat: "基础", tags: ["环", "torus", "几何"], build: () => [
     newLayer({ name: "环体", shape: "torus", particle: "dust", count: 420, radius: 1.8, thickness: 0.18,
       spin: 0.35, lifetime: 55, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#b388ff", color2: "#7ce8ff", dustScale: 1.1 })
+      colorMode: "gradient", color1: "#b388ff", color2: "#7ce8ff", pSize: 1.1 })
   ] },
   { name: "光子圆盘", cat: "基础", tags: ["盘", "disk", "地面"], build: () => [
     newLayer({ name: "圆盘", shape: "disk", particle: "dust", count: 520, radius: 2.1, thickness: 0.12,
       spin: -0.25, lifetime: 60, size: 4, sizeEnd: 0.8,
-      colorMode: "rainbow", color1: "#7ce8ff", color2: "#ff4d2e", dustScale: 1 })
+      colorMode: "rainbow", color1: "#7ce8ff", color2: "#ff4d2e", pSize: 1 })
   ] },
   { name: "十字光刃", cat: "基础", tags: ["十字", "cross", "刃"], build: () => [
     newLayer({ name: "光刃", shape: "cross", particle: "dust", count: 300, radius: 2.2, thickness: 0.07,
       spin: 0.9, pulse: 0.12, lifetime: 30, size: 6, sizeEnd: 2,
-      colorMode: "gradient", color1: "#ffffff", color2: "#7ce8ff", dustScale: 1.2 })
+      colorMode: "gradient", color1: "#ffffff", color2: "#7ce8ff", pSize: 1.2 })
   ] },
   { name: "网格空间", cat: "基础", tags: ["网格", "grid", "科幻"], build: () => [
     newLayer({ name: "网格", shape: "grid", particle: "dust", count: 300, radius: 2.6, turns: 5, thickness: 0.06,
       spin: 0.25, rise: 0.15, lifetime: 60, size: 4, sizeEnd: 1,
-      colorMode: "gradient", color1: "#00e5ff", color2: "#0066ff", dustScale: 1 })
+      colorMode: "gradient", color1: "#00e5ff", color2: "#0066ff", pSize: 1 })
   ] },
   { name: "锥形光束", cat: "基础", tags: ["锥", "cone", "聚光"], build: () => [
     newLayer({ name: "锥光", shape: "cone", particle: "dust", count: 380, radius: 1.9, height: 3.2, thickness: 0.06,
       spin: 0.3, rise: 0.4, lifetime: 45, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#ffd166", color2: "#ff6b00", dustScale: 1.1 })
+      colorMode: "gradient", color1: "#ffd166", color2: "#ff6b00", pSize: 1.1 })
   ] },
   { name: "球壳光晕", cat: "基础", tags: ["球壳", "shell", "晕"], build: () => [
     newLayer({ name: "光晕", shape: "shell", particle: "glow", count: 340, radius: 2.0, thickness: 0.15,
@@ -2857,26 +2959,26 @@ const PRESETS = [
   { name: "爱心告白", cat: "复杂", tags: ["爱心", "heart", "表白"], build: () => [
     newLayer({ name: "爱心", shape: "heart", particle: "dust", count: 420, radius: 1.5, thickness: 0.05,
       expand: 0.08, rise: 0.25, spin: 0.18, lifetime: 60, size: 6, sizeEnd: 2,
-      colorMode: "gradient", color1: "#ff2e63", color2: "#ff9ec4", dustScale: 1.3, pulse: 0.14 }),
+      colorMode: "gradient", color1: "#ff2e63", color2: "#ff9ec4", pSize: 1.3, pulse: 0.14 }),
     newLayer({ name: "点缀", shape: "sphere", particle: "heart", count: 40, radius: 2.2,
       expand: 0.5, rise: 0.9, spin: 0.3, lifetime: 50, size: 8, sizeEnd: 3, colorMode: "single", color1: "#ff6b81" })
   ] },
   { name: "文字流光", cat: "复杂", tags: ["文字", "text", "标语"], build: () => [
     newLayer({ name: "文字", shape: "text", text: "Hello", particle: "dust", count: 700, radius: 1.7,
       thickness: 0.05, expand: 0.05, rise: 0.12, spin: 0.08, lifetime: 70, size: 5, sizeEnd: 1.5,
-      colorMode: "rainbow", color1: "#7ce8ff", color2: "#ff4d2e", dustScale: 1.1 })
+      colorMode: "rainbow", color1: "#7ce8ff", color2: "#ff4d2e", pSize: 1.1 })
   ] },
   { name: "星系漩涡", cat: "复杂", tags: ["星系", "galaxy", "螺旋"], build: () => [
     newLayer({ name: "星臂", shape: "galaxy", particle: "dust", count: 560, radius: 2.2, turns: 2.4,
       expand: 0.15, rise: 0.1, spin: 0.45, lifetime: 80, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#8ea6ff", color2: "#ff9ad5", dustScale: 1.1 }),
+      colorMode: "gradient", color1: "#8ea6ff", color2: "#ff9ad5", pSize: 1.1 }),
     newLayer({ name: "核心", shape: "sphere", particle: "end_rod", count: 90, radius: 0.5,
       expand: 0.0, rise: 0.0, spin: 0.9, lifetime: 30, size: 8, sizeEnd: 3, colorMode: "single", color1: "#ffffff" })
   ] },
   { name: "DNA 螺旋", cat: "复杂", tags: ["螺旋", "dna", "生命"], build: () => [
     newLayer({ name: "双螺旋", shape: "dna", particle: "dust", count: 320, radius: 0.9, height: 3.2, turns: 3,
       thickness: 0.05, expand: 0.0, rise: 0.0, spin: 0.5, lifetime: 45, size: 6, sizeEnd: 2,
-      colorMode: "gradient", color1: "#2ee6a8", color2: "#3b82f6", dustScale: 1.3 })
+      colorMode: "gradient", color1: "#2ee6a8", color2: "#3b82f6", pSize: 1.3 })
   ] },
   { name: "冲击波", cat: "复杂", tags: ["爆炸", "冲击", "shock"], build: () => [
     newLayer({ name: "冲击环", shape: "ring", particle: "explosion", count: 120, radius: 0.4, thickness: 0.04,
@@ -2889,110 +2991,110 @@ const PRESETS = [
   { name: "龙卷风暴", cat: "复杂", tags: ["风", "tornado", "旋转"], build: () => [
     newLayer({ name: "风柱", shape: "tornado", particle: "dust", count: 520, radius: 1.9, height: 4.2, turns: 6,
       spin: 1.2, rise: 0.6, lifetime: 55, size: 4.5, sizeEnd: 0.8,
-      colorMode: "gradient", color1: "#9fe8ff", color2: "#5a7dff", dustScale: 1 }),
+      colorMode: "gradient", color1: "#9fe8ff", color2: "#5a7dff", pSize: 1 }),
     newLayer({ name: "碎屑", shape: "vortex", particle: "cloud", count: 180, radius: 2.4, height: 3.6, turns: 4,
       spin: 1.6, rise: 1.1, lifetime: 40, size: 6, sizeEnd: 2, colorMode: "single", color1: "#dfe8f0" })
   ] },
   { name: "银河星云", cat: "复杂", tags: ["星云", "云", "galaxy"], build: () => [
     newLayer({ name: "星云", shape: "cloud", particle: "dust", count: 620, radius: 2.4, thickness: 0.2,
       spin: 0.25, pulse: 0.05, lifetime: 80, size: 5, sizeEnd: 1.2,
-      colorMode: "gradient", color1: "#7a5cff", color2: "#ff6bcb", dustScale: 1.1 }),
+      colorMode: "gradient", color1: "#7a5cff", color2: "#ff6bcb", pSize: 1.1 }),
     newLayer({ name: "星点", shape: "sphere", particle: "end_rod", count: 120, radius: 2.6,
       spin: -0.2, lifetime: 30, size: 6, sizeEnd: 2, colorMode: "single", color1: "#ffffff" })
   ] },
   { name: "喷泉涌流", cat: "复杂", tags: ["水", "fountain", "喷"], build: () => [
     newLayer({ name: "水柱", shape: "fountain", particle: "dust", count: 420, radius: 1.6, height: 3.6, thickness: 0.2,
       rise: 1.2, spin: 0.4, lifetime: 42, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", dustScale: 1 }),
+      colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", pSize: 1 }),
     newLayer({ name: "水花", shape: "disk", particle: "splash", count: 160, radius: 1.9, thickness: 0.1,
       expand: 0.8, rise: -0.6, spin: 0.2, lifetime: 26, size: 7, sizeEnd: 2,
       fadeOut: 0.7, colorMode: "single", color1: "#a8f0ff" })
   ] },
   { name: "三重光环", cat: "复杂", tags: ["环", "ring", "同心"], build: () => [
     newLayer({ name: "外环", shape: "ring", particle: "dust", count: 240, radius: 2.4, thickness: 0.03,
-      spin: 0.35, lifetime: 60, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#ff4d2e", dustScale: 1.1 }),
+      spin: 0.35, lifetime: 60, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#ff4d2e", pSize: 1.1 }),
     newLayer({ name: "中环", shape: "ring", particle: "dust", count: 220, radius: 1.7, thickness: 0.03,
-      spin: -0.55, lifetime: 55, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#ffd166", dustScale: 1.1 }),
+      spin: -0.55, lifetime: 55, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#ffd166", pSize: 1.1 }),
     newLayer({ name: "内环", shape: "ring", particle: "dust", count: 200, radius: 1.1, thickness: 0.03,
-      spin: 0.85, lifetime: 50, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#7ce8ff", dustScale: 1.1 })
+      spin: 0.85, lifetime: 50, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#7ce8ff", pSize: 1.1 })
   ] },
   { name: "星芒爆发", cat: "复杂", tags: ["星", "爆发", "burst"], build: () => [
     newLayer({ name: "星芒", shape: "star_burst", particle: "dust", count: 320, radius: 2.2, arms: 8, thickness: 0.05,
-      spin: 0.6, lifetime: 36, size: 5, sizeEnd: 1, colorMode: "gradient", color1: "#fff3b0", color2: "#ff8a00", dustScale: 1.1 }),
+      spin: 0.6, lifetime: 36, size: 5, sizeEnd: 1, colorMode: "gradient", color1: "#fff3b0", color2: "#ff8a00", pSize: 1.1 }),
     newLayer({ name: "余辉", shape: "burst", particle: "firework", count: 200, radius: 2.6,
       expand: 1.6, lifetime: 30, size: 7, sizeEnd: 2, fadeOut: 0.7, colorMode: "single", color1: "#ffd166" })
   ] },
   { name: "三叶结", cat: "复杂", tags: ["结", "trefoil", "拓扑"], build: () => [
     newLayer({ name: "三叶结", shape: "trefoil", particle: "dust", count: 560, radius: 1.6,
       spin: 0.4, lifetime: 70, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#2ee6a8", color2: "#00b3ff", dustScale: 1.1 })
+      colorMode: "gradient", color1: "#2ee6a8", color2: "#00b3ff", pSize: 1.1 })
   ] },
   { name: "环面结", cat: "复杂", tags: ["结", "knot", "拓扑"], build: () => [
     newLayer({ name: "环面结", shape: "torus_knot", particle: "dust", count: 520, radius: 1.7, turns: 3, arms: 7, thickness: 0.06,
       spin: 0.45, lifetime: 65, size: 5, sizeEnd: 1,
-      colorMode: "rainbow", color1: "#ff4d2e", color2: "#7ce8ff", dustScale: 1.1 })
+      colorMode: "rainbow", color1: "#ff4d2e", color2: "#7ce8ff", pSize: 1.1 })
   ] },
   { name: "莫比乌斯环", cat: "复杂", tags: ["莫比乌斯", "moebius", "拓扑"], build: () => [
     newLayer({ name: "带面", shape: "moebius", particle: "dust", count: 520, radius: 1.8, thickness: 0.16,
       spin: 0.35, lifetime: 70, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#b388ff", color2: "#00e5ff", dustScale: 1.1 })
+      colorMode: "gradient", color1: "#b388ff", color2: "#00e5ff", pSize: 1.1 })
   ] },
   { name: "音符跳动", cat: "复杂", tags: ["音符", "music", "律动"], build: () => [
     newLayer({ name: "音符", shape: "music", particle: "note", count: 160, radius: 1.8, thickness: 0.05,
       rise: 0.8, spin: 0.3, lifetime: 44, size: 7, sizeEnd: 2, pulse: 0.15, colorMode: "single", color1: "#ffffff" }),
     newLayer({ name: "律动环", shape: "ring", particle: "dust", count: 220, radius: 1.5, thickness: 0.04,
       pulse: 0.3, pulsePeriod: 1.2, spin: 0.5, lifetime: 40, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#ff6bcb", color2: "#7ce8ff", dustScale: 1.2 })
+      colorMode: "gradient", color1: "#ff6bcb", color2: "#7ce8ff", pSize: 1.2 })
   ] },
   { name: "皇冠加冕", cat: "复杂", tags: ["皇冠", "crown", "王"], build: () => [
     newLayer({ name: "皇冠", shape: "crown", particle: "dust", count: 420, radius: 1.7, thickness: 0.06,
       spin: 0.25, pulse: 0.06, lifetime: 60, size: 5, sizeEnd: 1.2,
-      colorMode: "gradient", color1: "#ffd166", color2: "#ffb703", dustScale: 1.2 }),
+      colorMode: "gradient", color1: "#ffd166", color2: "#ffb703", pSize: 1.2 }),
     newLayer({ name: "宝珠", shape: "star5", particle: "end_rod", count: 90, radius: 0.5, thickness: 0.05,
       spin: -0.6, lifetime: 30, size: 7, sizeEnd: 2, colorMode: "single", color1: "#fff3b0" })
   ] },
   { name: "双翼展开", cat: "复杂", tags: ["翅膀", "wings", "羽翼"], build: () => [
     newLayer({ name: "羽翼", shape: "wings", particle: "dust", count: 460, radius: 2.2, height: 2.4, thickness: 0.1,
       spin: 0.12, pulse: 0.12, lifetime: 55, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#ffffff", color2: "#a8c8ff", dustScale: 1.1 }),
+      colorMode: "gradient", color1: "#ffffff", color2: "#a8c8ff", pSize: 1.1 }),
     newLayer({ name: "羽毛", shape: "cloud", particle: "cloud", count: 140, radius: 2.4,
       rise: -0.5, spin: 0.2, lifetime: 50, size: 6, sizeEnd: 2, colorMode: "single", color1: "#dfe8f0" })
   ] },
   { name: "无限符号", cat: "复杂", tags: ["无限", "infinity", "∞"], build: () => [
     newLayer({ name: "∞", shape: "infinity", particle: "dust", count: 480, radius: 1.8, thickness: 0.06,
       spin: 0.4, lifetime: 60, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#00e5ff", color2: "#b388ff", dustScale: 1.1 })
+      colorMode: "gradient", color1: "#00e5ff", color2: "#b388ff", pSize: 1.1 })
   ] },
   { name: "玫瑰绽放", cat: "复杂", tags: ["玫瑰", "rose", "花"], build: () => [
     newLayer({ name: "花瓣", shape: "rose", particle: "dust", count: 520, radius: 1.9, arms: 6, thickness: 0.05,
       spin: 0.3, pulse: 0.12, lifetime: 60, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#ff2e63", color2: "#ff9ec4", dustScale: 1.2 }),
+      colorMode: "gradient", color1: "#ff2e63", color2: "#ff9ec4", pSize: 1.2 }),
     newLayer({ name: "花蕊", shape: "sphere", particle: "end_rod", count: 80, radius: 0.4,
       spin: 0.6, lifetime: 28, size: 6, sizeEnd: 2, colorMode: "single", color1: "#ffd166" })
   ] },
   { name: "蝴蝶振翅", cat: "复杂", tags: ["蝴蝶", "butterfly"], build: () => [
     newLayer({ name: "蝶形", shape: "butterfly", particle: "dust", count: 460, radius: 1.8, thickness: 0.05,
       spin: 0.35, pulse: 0.14, pulsePeriod: 1.2, lifetime: 55, size: 5, sizeEnd: 1.2,
-      colorMode: "gradient", color1: "#ff6bcb", color2: "#7ce8ff", dustScale: 1.2 })
+      colorMode: "gradient", color1: "#ff6bcb", color2: "#7ce8ff", pSize: 1.2 })
   ] },
 
   /* ===================== 法阵 ===================== */
   { name: "法阵启动", cat: "法阵", tags: ["魔法", "启动", "跑光", "线路", "阵"], build: () => [
     newLayer({ name: "外环底", shape: "ring", particle: "dust", count: 280, radius: 2.4, thickness: 0.02,
       spin: 0, lifetime: 90, size: 3, sizeEnd: 1.2, alpha: 0.28,
-      colorMode: "single", color1: "#2b4a6b", dustScale: 0.9 }),
+      colorMode: "single", color1: "#2b4a6b", pSize: 0.9 }),
     newLayer({ name: "外环流光", shape: "ring", particle: "dust", count: 300, radius: 2.4, thickness: 0.02,
       flow: 0.45, spin: 0, lifetime: 80, size: 6, sizeEnd: 1.5, fadeIn: 0.03, fadeOut: 0.58,
-      colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", dustScale: 1.3 }),
+      colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", pSize: 1.3 }),
     newLayer({ name: "内环流光", shape: "ring_thick", particle: "dust", count: 220, radius: 1.5, thickness: 0.02,
       flow: -0.75, spin: 0, lifetime: 70, size: 6, sizeEnd: 1.5, fadeIn: 0.03, fadeOut: 0.55,
-      colorMode: "gradient", color1: "#ffd166", color2: "#ffffff", dustScale: 1.2 }),
+      colorMode: "gradient", color1: "#ffd166", color2: "#ffffff", pSize: 1.2 }),
     newLayer({ name: "六芒星巡行", shape: "star6", particle: "enchant", count: 220,
       radius: 1.55, thickness: 0.04, flow: 0.28, spin: 0, flat: true, lifetime: 60, size: 6, sizeEnd: 1.5,
       fadeIn: 0.05, fadeOut: 0.5, colorMode: "single", color1: "#d7b3ff" }),
     newLayer({ name: "符文巡行", shape: "ripple", particle: "dust", count: 200, radius: 2.0, turns: 1.2,
       flow: 0.9, spin: 0, rise: 0.2, lifetime: 50, size: 4, sizeEnd: 0.8, fadeIn: 0.04, fadeOut: 0.55,
-      colorMode: "gradient", color1: "#7ce8ff", color2: "#b388ff", dustScale: 1 }),
+      colorMode: "gradient", color1: "#7ce8ff", color2: "#b388ff", pSize: 1 }),
     newLayer({ name: "中心光柱", shape: "pillar", particle: "end_rod", count: 140, radius: 0.5, height: 3.6,
       pulse: 0.10, pulsePeriod: 1.2, lifetime: 34, size: 7, sizeEnd: 2,
       colorMode: "single", color1: "#ffffff" })
@@ -3000,24 +3102,24 @@ const PRESETS = [
   { name: "符文巡行", cat: "法阵", tags: ["魔法", "巡行", "跑光", "线路"], build: () => [
     newLayer({ name: "五芒星", shape: "star5", particle: "dust", count: 320, thickness: 0.03,
       radius: 1.9, flow: 0.4, spin: 0, flat: true, lifetime: 80, size: 6, sizeEnd: 1.4,
-      fadeIn: 0.04, fadeOut: 0.6, colorMode: "gradient", color1: "#ff4d2e", color2: "#ffd166", dustScale: 1.3 }),
+      fadeIn: 0.04, fadeOut: 0.6, colorMode: "gradient", color1: "#ff4d2e", color2: "#ffd166", pSize: 1.3 }),
     newLayer({ name: "外环", shape: "ring", particle: "dust", count: 260, radius: 2.4, thickness: 0.02,
       flow: -0.6, spin: 0, lifetime: 80, size: 5, sizeEnd: 1.2,
-      fadeIn: 0.04, fadeOut: 0.55, colorMode: "gradient", color1: "#ffd166", color2: "#ffffff", dustScale: 1.1 }),
+      fadeIn: 0.04, fadeOut: 0.55, colorMode: "gradient", color1: "#ffd166", color2: "#ffffff", pSize: 1.1 }),
     newLayer({ name: "内环", shape: "ring_thick", particle: "dust", count: 200, radius: 1.1, thickness: 0.03,
       flow: 0.95, spin: 0, lifetime: 70, size: 5, sizeEnd: 1.2,
-      fadeIn: 0.03, fadeOut: 0.5, colorMode: "single", color1: "#ffe9a3", dustScale: 1.2 })
+      fadeIn: 0.03, fadeOut: 0.5, colorMode: "single", color1: "#ffe9a3", pSize: 1.2 })
   ] },
   { name: "环形充能", cat: "法阵", tags: ["魔法", "充能", "跑光", "环"], build: () => [
     newLayer({ name: "外环", shape: "ring", particle: "dust", count: 280, radius: 2.6, thickness: 0.02,
       flow: 0.35, spin: 0, lifetime: 90, size: 5, sizeEnd: 1.2,
-      fadeIn: 0.03, fadeOut: 0.6, colorMode: "gradient", color1: "#2ee6a8", color2: "#ffffff", dustScale: 1.2 }),
+      fadeIn: 0.03, fadeOut: 0.6, colorMode: "gradient", color1: "#2ee6a8", color2: "#ffffff", pSize: 1.2 }),
     newLayer({ name: "中环", shape: "ring", particle: "dust", count: 240, radius: 1.9, thickness: 0.02,
       flow: -0.65, spin: 0, lifetime: 80, size: 5, sizeEnd: 1.2,
-      fadeIn: 0.03, fadeOut: 0.55, colorMode: "gradient", color1: "#00e5ff", color2: "#ffffff", dustScale: 1.2 }),
+      fadeIn: 0.03, fadeOut: 0.55, colorMode: "gradient", color1: "#00e5ff", color2: "#ffffff", pSize: 1.2 }),
     newLayer({ name: "内环", shape: "ring", particle: "dust", count: 200, radius: 1.2, thickness: 0.02,
       flow: 1.1, spin: 0, lifetime: 70, size: 5, sizeEnd: 1.2,
-      fadeIn: 0.03, fadeOut: 0.5, colorMode: "gradient", color1: "#a8ffd8", color2: "#ffffff", dustScale: 1.2 }),
+      fadeIn: 0.03, fadeOut: 0.5, colorMode: "gradient", color1: "#a8ffd8", color2: "#ffffff", pSize: 1.2 }),
     newLayer({ name: "核心", shape: "sphere", particle: "end_rod", count: 90, radius: 0.45,
       pulse: 0.14, pulsePeriod: 1.2, lifetime: 30, size: 7, sizeEnd: 2,
       colorMode: "single", color1: "#ffffff" })
@@ -3032,15 +3134,15 @@ const PRESETS = [
   ] },
   { name: "传送门", cat: "法阵", tags: ["魔法", "传送", "portal"], build: () => [
     newLayer({ name: "门环", shape: "portal", particle: "dust", count: 420, radius: 1.9, turns: 2.4, thickness: 0.05,
-      spin: 0.7, lifetime: 60, size: 5, sizeEnd: 1, colorMode: "gradient", color1: "#b388ff", color2: "#00e5ff", dustScale: 1.2 }),
+      spin: 0.7, lifetime: 60, size: 5, sizeEnd: 1, colorMode: "gradient", color1: "#b388ff", color2: "#00e5ff", pSize: 1.2 }),
     newLayer({ name: "旋流", shape: "spiral_flat", particle: "dust", count: 300, radius: 1.5, turns: 3.2,
-      spin: -0.9, lifetime: 45, size: 4.5, sizeEnd: 0.8, colorMode: "gradient", color1: "#7a5cff", color2: "#ffffff", dustScale: 1 }),
+      spin: -0.9, lifetime: 45, size: 4.5, sizeEnd: 0.8, colorMode: "gradient", color1: "#7a5cff", color2: "#ffffff", pSize: 1 }),
     newLayer({ name: "门芯", shape: "disk", particle: "portal", count: 180, radius: 1.3, thickness: 0.15,
       spin: 0.3, lifetime: 30, size: 8, sizeEnd: 3, colorMode: "single", color1: "#c9a8ff" })
   ] },
   { name: "圣光结界", cat: "法阵", tags: ["魔法", "圣光", "结界"], build: () => [
     newLayer({ name: "罩体", shape: "dome", particle: "dust", count: 460, radius: 2.2, height: 3.0, thickness: 0.06,
-      spin: 0.15, pulse: 0.05, lifetime: 70, size: 5, sizeEnd: 1.2, colorMode: "gradient", color1: "#fff3b0", color2: "#ffffff", dustScale: 1.1 }),
+      spin: 0.15, pulse: 0.05, lifetime: 70, size: 5, sizeEnd: 1.2, colorMode: "gradient", color1: "#fff3b0", color2: "#ffffff", pSize: 1.1 }),
     newLayer({ name: "界线", shape: "ring", particle: "end_rod", count: 180, radius: 2.2, thickness: 0.03,
       spin: -0.35, lifetime: 40, size: 6, sizeEnd: 2, colorMode: "single", color1: "#ffd166" }),
     newLayer({ name: "光尘", shape: "cylinder", particle: "glow", count: 160, radius: 1.6, height: 3.0,
@@ -3049,19 +3151,19 @@ const PRESETS = [
   { name: "暗影阵", cat: "法阵", tags: ["魔法", "暗影", "阵"], build: () => magicCircle({ c1: "#7a5cff", c2: "#2b1a4d", sigil: "star_burst", sigilName: "暗影印记", spin1: -0.2, spin2: 0.45 }) },
   { name: "时钟法阵", cat: "法阵", tags: ["魔法", "时钟", "刻度"], build: () => [
     newLayer({ name: "刻度", shape: "ring", particle: "dust", count: 300, radius: 2.4, thickness: 0.02,
-      spin: 0.08, lifetime: 90, size: 5, sizeEnd: 1.5, colorMode: "single", color1: "#ffd166", dustScale: 1.1 }),
+      spin: 0.08, lifetime: 90, size: 5, sizeEnd: 1.5, colorMode: "single", color1: "#ffd166", pSize: 1.1 }),
     newLayer({ name: "指针", shape: "line", particle: "dust", count: 120, radius: 1.6,
-      spin: 0.5, lifetime: 60, size: 5, sizeEnd: 1.5, colorMode: "gradient", color1: "#ffd166", color2: "#ff4d2e", dustScale: 1.2 }),
+      spin: 0.5, lifetime: 60, size: 5, sizeEnd: 1.5, colorMode: "gradient", color1: "#ffd166", color2: "#ff4d2e", pSize: 1.2 }),
     newLayer({ name: "内盘", shape: "disk", particle: "enchant", count: 260, radius: 1.9, thickness: 0.1,
       spin: -0.2, lifetime: 45, size: 5, sizeEnd: 1.5, colorMode: "single", color1: "#fff3b0" })
   ] },
   { name: "三重结界", cat: "法阵", tags: ["魔法", "结界", "护盾"], build: () => [
     newLayer({ name: "外结界", shape: "ring_thick", particle: "dust", count: 300, radius: 2.6, thickness: 0.05,
-      spin: 0.22, lifetime: 80, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#00e5ff", dustScale: 1.1 }),
+      spin: 0.22, lifetime: 80, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#00e5ff", pSize: 1.1 }),
     newLayer({ name: "中结界", shape: "ring_thick", particle: "dust", count: 260, radius: 2.0, thickness: 0.05,
-      spin: -0.36, lifetime: 70, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#7ce8ff", dustScale: 1.1 }),
+      spin: -0.36, lifetime: 70, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#7ce8ff", pSize: 1.1 }),
     newLayer({ name: "内结界", shape: "ring_thick", particle: "dust", count: 220, radius: 1.4, thickness: 0.05,
-      spin: 0.52, lifetime: 60, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#ffffff", dustScale: 1.1 })
+      spin: 0.52, lifetime: 60, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#ffffff", pSize: 1.1 })
   ] },
   { name: "封印阵", cat: "法阵", tags: ["魔法", "封印", "锁"], build: () => [
     ...magicCircle({ c1: "#ff4d2e", c2: "#ffd166", sigil: "star6", sigilName: "封印星", spin1: 0.1, spin2: -0.15 }),
@@ -3081,7 +3183,7 @@ const PRESETS = [
   { name: "血月阵", cat: "法阵", tags: ["魔法", "血", "暗红"], build: () => [
     ...magicCircle({ c1: "#ff2e63", c2: "#ff9ec4", sigil: "heart_outline", sigilName: "血印" }),
     newLayer({ name: "血雾", shape: "cloud", particle: "dust", count: 240, radius: 2.6, thickness: 0.2,
-      rise: 0.3, spin: -0.2, lifetime: 60, size: 6, sizeEnd: 2, colorMode: "gradient", color1: "#8b0020", color2: "#ff2e63", dustScale: 1 })
+      rise: 0.3, spin: -0.2, lifetime: 60, size: 6, sizeEnd: 2, colorMode: "gradient", color1: "#8b0020", color2: "#ff2e63", pSize: 1 })
   ] },
   { name: "雷霆阵", cat: "法阵", tags: ["魔法", "雷", "电"], build: () => [
     ...magicCircle({ c1: "#7ce8ff", c2: "#ffffff", sigil: "lightning", sigilName: "雷纹" }),
@@ -3095,21 +3197,21 @@ const PRESETS = [
   ] },
   { name: "虚空阵", cat: "法阵", tags: ["魔法", "虚空", "黑洞"], build: () => [
     newLayer({ name: "虚涡", shape: "vortex", particle: "dust", count: 520, radius: 2.4, height: 3.0, turns: 5,
-      spin: 1.1, lifetime: 60, size: 5, sizeEnd: 1, colorMode: "gradient", color1: "#7a5cff", color2: "#000000", dustScale: 1.1 }),
+      spin: 1.1, lifetime: 60, size: 5, sizeEnd: 1, colorMode: "gradient", color1: "#7a5cff", color2: "#000000", pSize: 1.1 }),
     newLayer({ name: "界环", shape: "ring", particle: "dust", count: 240, radius: 2.6, thickness: 0.03,
-      spin: -0.3, lifetime: 60, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#b388ff", dustScale: 1.1 }),
+      spin: -0.3, lifetime: 60, size: 5, sizeEnd: 1.2, colorMode: "single", color1: "#b388ff", pSize: 1.1 }),
     newLayer({ name: "黑洞", shape: "sphere", particle: "soul", count: 140, radius: 0.6,
       spin: 0.9, lifetime: 30, size: 7, sizeEnd: 2, colorMode: "single", color1: "#5a7dff" })
   ] },
   { name: "元素祭坛", cat: "法阵", tags: ["魔法", "元素", "四象"], build: () => [
     newLayer({ name: "土", shape: "cube", particle: "dust", count: 220, radius: 2.2, thickness: 0.06,
-      spin: 0.2, lifetime: 50, size: 5, sizeEnd: 1, colorMode: "single", color1: "#7a9a4a", dustScale: 1.1 }),
+      spin: 0.2, lifetime: 50, size: 5, sizeEnd: 1, colorMode: "single", color1: "#7a9a4a", pSize: 1.1 }),
     newLayer({ name: "水", shape: "sphere", particle: "dust", count: 220, radius: 1.9, thickness: 0.08,
-      spin: -0.4, lifetime: 50, size: 5, sizeEnd: 1, colorMode: "single", color1: "#3b82f6", dustScale: 1.1 }),
+      spin: -0.4, lifetime: 50, size: 5, sizeEnd: 1, colorMode: "single", color1: "#3b82f6", pSize: 1.1 }),
     newLayer({ name: "火", shape: "cone", particle: "dust", count: 220, radius: 1.6, height: 2.6, thickness: 0.05,
-      spin: 0.6, lifetime: 50, size: 5, sizeEnd: 1, colorMode: "single", color1: "#ff4d2e", dustScale: 1.1 }),
+      spin: 0.6, lifetime: 50, size: 5, sizeEnd: 1, colorMode: "single", color1: "#ff4d2e", pSize: 1.1 }),
     newLayer({ name: "风", shape: "spiral_flat", particle: "dust", count: 220, radius: 1.3, turns: 3,
-      spin: -0.8, lifetime: 50, size: 5, sizeEnd: 1, colorMode: "single", color1: "#dfe8f0", dustScale: 1.1 })
+      spin: -0.8, lifetime: 50, size: 5, sizeEnd: 1, colorMode: "single", color1: "#dfe8f0", pSize: 1.1 })
   ] },
 
   /* ===================== 法阵 · 2D 平面图形巡行 ===================== */
@@ -3137,11 +3239,11 @@ const PRESETS = [
     newLayer({ name: "底环", shape: "ring", particle: "dust", count: 330, radius: 2.5, thickness: 0.02,
       flat: true, flow: 0.45, seq: 2.6, seqPhase: 0, seqStyle: "rings", seqEnd: "fade", stack: 3, stackGap: 0.65,
       lifetime: 90, size: 5.5, sizeEnd: 1.4,
-      colorMode: "gradient", color1: "#00e5ff", color2: "#ffffff", dustScale: 1.2 }),
+      colorMode: "gradient", color1: "#00e5ff", color2: "#ffffff", pSize: 1.2 }),
     newLayer({ name: "中环", shape: "ring_thick", particle: "dust", count: 320, radius: 1.7, thickness: 0.03,
       flat: true, flow: -0.7, seq: 2.6, seqPhase: 0.026, seqStyle: "rings", seqEnd: "fade", stack: 4, stackGap: 0.45, lift: 0.9,
       lifetime: 80, size: 5, sizeEnd: 1.3,
-      colorMode: "gradient", color1: "#b388ff", color2: "#ffffff", dustScale: 1.2 }),
+      colorMode: "gradient", color1: "#b388ff", color2: "#ffffff", pSize: 1.2 }),
     newLayer({ name: "顶印", shape: "star6", particle: "enchant", count: 260, radius: 1.05, thickness: 0.03,
       flat: true, flow: 0.35, seq: 2.6, seqPhase: 0.052, seqStyle: "bloom", seqEnd: "fade", lift: 3.5,
       lifetime: 70, size: 6, sizeEnd: 1.4,
@@ -3149,7 +3251,7 @@ const PRESETS = [
     newLayer({ name: "符文", shape: "ripple", particle: "dust", count: 200, radius: 2.2, turns: 1.2,
       flat: true, flow: 0.85, rise: 0.25, seq: 2.6, seqPhase: 0.078, seqStyle: "rings", seqEnd: "fade", lift: 1.6,
       lifetime: 55, size: 4.5, sizeEnd: 0.8,
-      colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", dustScale: 1 }),
+      colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", pSize: 1 }),
     newLayer({ name: "光柱", shape: "pillar", particle: "end_rod", count: 170, radius: 2.6, height: 5.0,
       spin: 0.15, seq: 2.6, seqPhase: 0.104, seqStyle: "stack", seqEnd: "fade", lift: 1.0, lifetime: 40, size: 7, sizeEnd: 2,
       colorMode: "single", color1: "#a8f0ff" })
@@ -3159,11 +3261,11 @@ const PRESETS = [
     newLayer({ name: "门环", shape: "ring", particle: "dust", count: 320, radius: 2.4, thickness: 0.02,
       flat: true, tilt: 90, lift: 1.3, flow: 0.4, seq: 2.8, seqPhase: 0, seqStyle: "rings", seqEnd: "fade",
       lifetime: 90, size: 5.5, sizeEnd: 1.4,
-      colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", dustScale: 1.2 }),
+      colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", pSize: 1.2 }),
     newLayer({ name: "内环", shape: "ring_thick", particle: "dust", count: 300, radius: 1.6, thickness: 0.03,
       flat: true, tilt: 90, lift: 1.3, flow: -0.7, seq: 2.8, seqPhase: 0.028, seqStyle: "rings", seqEnd: "fade", stack: 2, stackGap: 0.3,
       lifetime: 80, size: 5, sizeEnd: 1.3,
-      colorMode: "gradient", color1: "#b388ff", color2: "#ffffff", dustScale: 1.2 }),
+      colorMode: "gradient", color1: "#b388ff", color2: "#ffffff", pSize: 1.2 }),
     newLayer({ name: "印记", shape: "star5", particle: "enchant", count: 280, radius: 1.75, thickness: 0.04,
       flat: true, tilt: 90, lift: 1.3, flow: 0.3, seq: 2.8, seqPhase: 0.056, seqStyle: "bloom", seqEnd: "fade",
       lifetime: 70, size: 6, sizeEnd: 1.4,
@@ -3171,7 +3273,7 @@ const PRESETS = [
     newLayer({ name: "涟漪", shape: "ripple", particle: "dust", count: 200, radius: 2.1, turns: 1.2,
       flat: true, tilt: 90, lift: 1.3, flow: 0.85, seq: 2.8, seqPhase: 0.084, seqStyle: "rings", seqEnd: "fade",
       lifetime: 55, size: 4.5, sizeEnd: 0.8,
-      colorMode: "gradient", color1: "#00e5ff", color2: "#ffffff", dustScale: 1 })
+      colorMode: "gradient", color1: "#00e5ff", color2: "#ffffff", pSize: 1 })
   ] },
 
   /* ===================== 自然 ===================== */
@@ -3180,14 +3282,14 @@ const PRESETS = [
       rise: -0.45, spin: 0.35, lifetime: 70, size: 7, sizeEnd: 2.5, colorMode: "single", color1: "#ffb7c5" }),
     newLayer({ name: "花雾", shape: "cylinder", particle: "dust", count: 200, radius: 2.4, height: 4.0, thickness: 0.15,
       rise: -0.25, spin: -0.2, lifetime: 60, size: 5, sizeEnd: 1.5,
-      colorMode: "gradient", color1: "#ffd1dc", color2: "#ff8fa8", dustScale: 1.1 })
+      colorMode: "gradient", color1: "#ffd1dc", color2: "#ff8fa8", pSize: 1.1 })
   ] },
   { name: "雪花纷飞", cat: "自然", tags: ["雪", "冬", "snow"], build: () => [
     newLayer({ name: "雪花", shape: "cloud", particle: "snowflake", count: 260, radius: 3.0,
       rise: -0.4, spin: 0.3, lifetime: 70, size: 7, sizeEnd: 2.5, colorMode: "single", color1: "#ffffff" }),
     newLayer({ name: "寒气", shape: "cylinder", particle: "dust", count: 180, radius: 2.6, height: 4.2, thickness: 0.18,
       rise: -0.2, spin: 0.15, lifetime: 60, size: 5, sizeEnd: 1.5,
-      colorMode: "gradient", color1: "#dfe8f0", color2: "#a8f0ff", dustScale: 1 })
+      colorMode: "gradient", color1: "#dfe8f0", color2: "#a8f0ff", pSize: 1 })
   ] },
   { name: "萤火之森", cat: "自然", tags: ["萤火", "森林", "夜"], build: () => [
     newLayer({ name: "萤火", shape: "cloud", particle: "glow", count: 180, radius: 2.8,
@@ -3195,7 +3297,7 @@ const PRESETS = [
       colorMode: "single", color1: "#ffe9a3" }),
     newLayer({ name: "光尘", shape: "sphere", particle: "dust", count: 160, radius: 3.0, thickness: 0.2,
       rise: 0.15, spin: -0.15, lifetime: 70, size: 4, sizeEnd: 1,
-      colorMode: "gradient", color1: "#d8ffb0", color2: "#8bd45a", dustScale: 1 })
+      colorMode: "gradient", color1: "#d8ffb0", color2: "#8bd45a", pSize: 1 })
   ] },
   { name: "篝火", cat: "自然", tags: ["火", "篝火", "campfire"], build: () => [
     newLayer({ name: "火焰", shape: "cone", particle: "flame", count: 200, radius: 0.7, height: 2.0, thickness: 0.08,
@@ -3211,23 +3313,23 @@ const PRESETS = [
     newLayer({ name: "闪电", shape: "lightning", particle: "electric_spark", count: 90, radius: 2.2, height: 4.2, turns: 2,
       spin: 0.2, pulse: 0.35, pulsePeriod: 1.6, lifetime: 16, size: 8, sizeEnd: 2, colorMode: "single", color1: "#dfe8ff" }),
     newLayer({ name: "雨雾", shape: "cloud", particle: "dust", count: 200, radius: 3.0, thickness: 0.2,
-      rise: -0.2, spin: -0.1, lifetime: 70, size: 6, sizeEnd: 2, colorMode: "gradient", color1: "#5a6b85", color2: "#9fb4d0", dustScale: 1 })
+      rise: -0.2, spin: -0.1, lifetime: 70, size: 6, sizeEnd: 2, colorMode: "gradient", color1: "#5a6b85", color2: "#9fb4d0", pSize: 1 })
   ] },
   { name: "泡泡上升", cat: "自然", tags: ["泡", "水", "bubble"], build: () => [
     newLayer({ name: "气泡", shape: "cloud", particle: "bubble", count: 180, radius: 2.4,
       rise: 0.7, spin: 0.15, lifetime: 60, size: 8, sizeEnd: 2.5, colorMode: "single", color1: "#a8f0ff" }),
     newLayer({ name: "水雾", shape: "cylinder", particle: "dust", count: 160, radius: 2.2, height: 4.0, thickness: 0.14,
-      rise: 0.5, spin: -0.2, lifetime: 55, size: 5, sizeEnd: 1.5, colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", dustScale: 1 })
+      rise: 0.5, spin: -0.2, lifetime: 55, size: 5, sizeEnd: 1.5, colorMode: "gradient", color1: "#7ce8ff", color2: "#ffffff", pSize: 1 })
   ] },
   { name: "落叶旋舞", cat: "自然", tags: ["落叶", "秋", "叶"], build: () => [
     newLayer({ name: "落叶", shape: "spiral_flat", particle: "pale_oak_leaves", count: 220, radius: 2.6, turns: 2.6,
       rise: -0.35, spin: 0.6, lifetime: 60, size: 7, sizeEnd: 2.5, colorMode: "single", color1: "#c9a227" }),
     newLayer({ name: "尘絮", shape: "cloud", particle: "dust", count: 180, radius: 2.8, thickness: 0.2,
-      rise: -0.2, spin: -0.25, lifetime: 60, size: 5, sizeEnd: 1.5, colorMode: "gradient", color1: "#ffd166", color2: "#c9a227", dustScale: 1 })
+      rise: -0.2, spin: -0.25, lifetime: 60, size: 5, sizeEnd: 1.5, colorMode: "gradient", color1: "#ffd166", color2: "#c9a227", pSize: 1 })
   ] },
   { name: "星尘飘散", cat: "自然", tags: ["星尘", "宇宙", "尘"], build: () => [
     newLayer({ name: "星尘", shape: "cloud", particle: "dust", count: 420, radius: 3.0, thickness: 0.2,
-      rise: 0.2, spin: 0.2, lifetime: 80, size: 4.5, sizeEnd: 1, colorMode: "rainbow", color1: "#7ce8ff", color2: "#ff6bcb", dustScale: 1 }),
+      rise: 0.2, spin: 0.2, lifetime: 80, size: 4.5, sizeEnd: 1, colorMode: "rainbow", color1: "#7ce8ff", color2: "#ff6bcb", pSize: 1 }),
     newLayer({ name: "光点", shape: "sphere", particle: "end_rod", count: 120, radius: 2.8,
       rise: 0.15, spin: -0.3, lifetime: 40, size: 5, sizeEnd: 1.5, colorMode: "single", color1: "#ffffff" })
   ] },
@@ -3250,7 +3352,7 @@ const PRESETS = [
   { name: "治愈光环", cat: "战斗", tags: ["治疗", "heal", "回复"], build: () => [
     newLayer({ name: "治愈环", shape: "ring", particle: "dust", count: 240, radius: 1.8, thickness: 0.04,
       rise: 0.7, spin: 0.4, lifetime: 44, size: 5, sizeEnd: 1,
-      colorMode: "gradient", color1: "#2ee6a8", color2: "#ffffff", dustScale: 1.2 }),
+      colorMode: "gradient", color1: "#2ee6a8", color2: "#ffffff", pSize: 1.2 }),
     newLayer({ name: "生命", shape: "heart", particle: "heart", count: 60, radius: 1.4, thickness: 0.05,
       rise: 0.9, spin: 0.15, lifetime: 40, size: 8, sizeEnd: 3, colorMode: "single", color1: "#ff6b81" }),
     newLayer({ name: "圣光", shape: "pillar", particle: "end_rod", count: 120, radius: 0.9, height: 3.2,
@@ -3277,7 +3379,7 @@ const PRESETS = [
   { name: "冰霜新星", cat: "战斗", tags: ["冰", "新星", "nova"], build: () => [
     newLayer({ name: "冰环", shape: "ring", particle: "dust", count: 220, radius: 0.5, thickness: 0.04,
       expand: 4.0, spin: 0.3, lifetime: 22, size: 7, sizeEnd: 2, fadeOut: 0.8,
-      colorMode: "gradient", color1: "#a8f0ff", color2: "#ffffff", dustScale: 1.2 }),
+      colorMode: "gradient", color1: "#a8f0ff", color2: "#ffffff", pSize: 1.2 }),
     newLayer({ name: "霜刺", shape: "star_burst", particle: "snowflake", count: 200, radius: 2.2, arms: 6, thickness: 0.05,
       expand: 1.8, spin: -0.9, lifetime: 26, size: 7, sizeEnd: 2, fadeOut: 0.8, colorMode: "single", color1: "#dfe8f0" })
   ] },
@@ -3285,14 +3387,14 @@ const PRESETS = [
     newLayer({ name: "盾面", shape: "shield", particle: "enchant", count: 260, radius: 1.9, thickness: 0.06,
       spin: 0.2, pulse: 0.06, lifetime: 60, size: 6, sizeEnd: 1.5, colorMode: "single", color1: "#7ce8ff" }),
     newLayer({ name: "盾缘", shape: "ring", particle: "dust", count: 200, radius: 1.9, thickness: 0.04,
-      spin: -0.35, lifetime: 50, size: 5, sizeEnd: 1, colorMode: "gradient", color1: "#3b82f6", color2: "#7ce8ff", dustScale: 1.1 })
+      spin: -0.35, lifetime: 50, size: 5, sizeEnd: 1, colorMode: "gradient", color1: "#3b82f6", color2: "#7ce8ff", pSize: 1.1 })
   ] },
   { name: "蓄力光环", cat: "战斗", tags: ["蓄力", "charge", "聚气"], build: () => [
     newLayer({ name: "聚气", shape: "spiral_cone", particle: "crit", count: 260, radius: 2.2, height: 2.6, turns: 5,
       rise: 0.9, spin: 1.4, lifetime: 30, size: 6, sizeEnd: 1.5, colorMode: "single", color1: "#ffd166" }),
     newLayer({ name: "蓄能环", shape: "ring", particle: "dust", count: 200, radius: 1.6, thickness: 0.04,
       pulse: 0.4, pulsePeriod: 0.9, spin: 0.8, lifetime: 36, size: 6, sizeEnd: 1.5,
-      colorMode: "gradient", color1: "#ff4d2e", color2: "#ffd166", dustScale: 1.2 })
+      colorMode: "gradient", color1: "#ff4d2e", color2: "#ffd166", pSize: 1.2 })
   ] },
   { name: "终焉爆炸", cat: "战斗", tags: ["终极", "爆炸", "final"], build: () => [
     newLayer({ name: "核心", shape: "sphere", particle: "explosion_emitter", count: 120, radius: 0.5,
@@ -3325,6 +3427,12 @@ const state = {
   zoom: 1,
   autoRotate: true,
   grid: true,
+  steve: true,                      // 在特效中心（原点）显示 MC 玩家史蒂夫，作为中心点参照
+  /* —— 游戏内光照模拟（只影响预览观感，不进导出代码） —— */
+  light: 15,                        // 方块光照等级 0~15（火把 / 荧石等）
+  skyLight: 15,                     // 天空光照等级 0~15（露天白天 15、夜晚约 4）
+  weather: "clear",                 // clear | rain | thunder：按游戏规则压低天空光照
+  litParticles: true,               // 粒子是否受光照着色（自身发光的粒子自动豁免）
   scene: "night",
   target: "lbjs",
   version: "1.21.4",
@@ -3434,7 +3542,8 @@ const LOOK_SIZE_FIX = {
 function lookOf(p) { return LOOK_MAP[p] || "square"; }
 function lookSize(layer, look) {
   const base = LOOK_SIZE_FIX[layer.particle] || LOOK_SIZE[look] || 0.13;
-  return COLOR_KIND[layer.particle] === "dust" ? base * Math.max(0.2, layer.dustScale) : base;
+  // 尺寸（格）：dust / 双色尘直接就是 MC 的 scale；其余类型作视觉缩放（游戏内没有尺寸参数）
+  return base * Math.max(0.05, layer.pSize == null ? 1 : layer.pSize);
 }
 
 const lookSpriteCache = new Map();
@@ -3574,6 +3683,53 @@ function drawGrid(cam, scene, g2, w, h) {
   }
 }
 
+/* ---------- MC 玩家（史蒂夫）：以特效中心点为参照的显隐调试 ---------- */
+/* 6 个方块拼出经典史蒂夫：脚底 y=-1、头顶 y=+1，身体中心正好落在原点（玩家脚上方 1 格处） */
+const STEVE_PARTS = [
+  { x: [-0.25, 0.00], y: [-1.00, -0.25], z: [-0.125, 0.125], c: "#3B4FBF" },   // 右腿（牛仔裤）
+  { x: [0.00, 0.25], y: [-1.00, -0.25], z: [-0.125, 0.125], c: "#3B4FBF" },    // 左腿
+  { x: [-0.25, 0.25], y: [-0.25, 0.50], z: [-0.125, 0.125], c: "#12A6A6" },    // 躯干（青色上衣）
+  { x: [-0.50, -0.25], y: [-0.25, 0.50], z: [-0.125, 0.125], c: "#C08A5E" },   // 右臂（肤色）
+  { x: [0.25, 0.50], y: [-0.25, 0.50], z: [-0.125, 0.125], c: "#C08A5E" },     // 左臂（肤色）
+  { x: [-0.25, 0.25], y: [0.50, 1.00], z: [-0.25, 0.25], c: "#C08A5E" }        // 头
+];
+/* 六个面的顶点索引（bit0=x, bit1=y, bit2=z）与明暗系数：无光照也有立体感 */
+const STEVE_FACES = [
+  { idx: [2, 3, 7, 6], k: 1.16 }, { idx: [0, 1, 5, 4], k: 0.55 },
+  { idx: [4, 5, 7, 6], k: 1.00 }, { idx: [0, 1, 3, 2], k: 0.72 },
+  { idx: [1, 3, 7, 5], k: 0.90 }, { idx: [0, 2, 6, 4], k: 0.78 }
+];
+function drawSteve(cam, g, w, h, lf) {
+  const lm = lf == null ? sceneLight() : lf;   // 受光照影响：暗处史蒂夫跟着变暗（画板传 1 保持全亮）
+  const polys = [];
+  for (const p of STEVE_PARTS) {
+    const V = [];
+    let ok = true;
+    for (let i = 0; i < 8; i++) {
+      const v = project(i & 1 ? p.x[1] : p.x[0], i & 2 ? p.y[1] : p.y[0], i & 4 ? p.z[1] : p.z[0], cam, w, h);
+      if (!v) { ok = false; break; }
+      V.push(v);
+    }
+    if (!ok) continue;
+    const rgb = hexToRgb(p.c);
+    for (const f of STEVE_FACES) {
+      const q = f.idx.map(i => V[i]);
+      polys.push({ q: q, d: (q[0].f + q[1].f + q[2].f + q[3].f) / 4, k: f.k, rgb: rgb });
+    }
+  }
+  polys.sort((a, b) => a.d - b.d);       // 远的先画：没有深度缓冲也能正确遮挡
+  g.globalCompositeOperation = "source-over";
+  g.globalAlpha = 1;
+  for (const pl of polys) {
+    g.fillStyle = "rgb(" + (pl.rgb[0] * pl.k * lm | 0) + "," + (pl.rgb[1] * pl.k * lm | 0) + "," + (pl.rgb[2] * pl.k * lm | 0) + ")";
+    g.beginPath();
+    g.moveTo(pl.q[0].sx, pl.q[0].sy);
+    for (let i = 1; i < pl.q.length; i++) g.lineTo(pl.q[i].sx, pl.q[i].sy);
+    g.closePath();
+    g.fill();
+  }
+}
+
 let lastFpsT = performance.now(), frames = 0, fps = 0, drawnParticles = 0;
 
 /* 当前相机参数（渲染与画板反投影共用；focal 按各自画布高度换算，两窗口可见范围一致） */
@@ -3630,6 +3786,8 @@ function render(now) {
 
   const cam = currentCam();
   if (state.grid) drawGrid(cam, scene, ctx, W, H);
+  drawAmbientDark(ctx, W, H);                   // 游戏内光照模拟：暗环境整体压暗（满光照时无变化）
+  if (state.steve) drawSteve(cam, ctx, W, H);   // 中心点参照：先画人物，粒子再叠上去
 
   // 实机模式用普通 alpha 混合，还原游戏里粒子互不发光、会互相遮挡的观感
   const real = state.view === "real";
@@ -3644,6 +3802,13 @@ function render(now) {
     const pts = shapeOf(layer);
     const seq = seqState(layer, state.time);
     const life = Math.max(0.05, layer.lifetime / 20);
+    /* MC 原版生成参数：尺寸（格）/ 结束尺寸（格）/ 速度倍率 / 生成扩散（格） */
+    const sz0 = layer.pSize == null ? 1 : layer.pSize;
+    const sz1 = layer.pSizeEnd > 0 ? layer.pSizeEnd : sz0;
+    const spd = layer.pSpeed == null ? 1 : layer.pSpeed;
+    const spX = layer.pSpreadX || 0, spY = layer.pSpreadY || 0, spZ = layer.pSpreadZ || 0;
+    // 游戏内光照模拟：本层粒子的亮度系数（发光粒子豁免 / 可通过开关整体关闭）
+    const lf = particleLight(layer);
     // 自然呼吸：单一平稳正弦、所有图层共用同一时钟（同一周期就同相，不会互相错拍看着像抖）
     const pulse = (1 + layer.pulse * Math.sin(state.time / layer.pulsePeriod * TAU) + seq.p) * seq.s;
     const base = layer.radius * pulse;
@@ -3657,10 +3822,16 @@ function render(now) {
       const t = i / n;
       const o = (flowShift ? ((i + flowShift) % n + n) % n : i) * 3;
       const ux = pts[o], uy = pts[o + 1], uz = pts[o + 2];
-      const k = base * (1 + layer.expand * life * t);
+      const k = base * (1 + layer.expand * spd * life * t);
       let x = ux * k, y = uy * k, z = uz * k;
-      y += layer.rise * life * t;
+      y += layer.rise * spd * life * t;
       if (layer.wave > 0) y += layer.wave * Math.sin((t * layer.waveFreq) * TAU);
+      // 生成扩散（格）：对应命令里的 xDist / yDist / zDist
+      if (spX || spY || spZ) {
+        x += jit1(i, 1) * spX;
+        y += jit1(i, 2) * spY;
+        z += jit1(i, 3) * spZ;
+      }
       const rx = x * cs - z * sn, rz = x * sn + z * cs;
 
       const p = project(rx, y, rz, cam);
@@ -3679,12 +3850,14 @@ function render(now) {
       }
       if (a <= 0.004) continue;
 
-      const col = colorAt(layer, i, n, t);
+      const c0 = colorAt(layer, i, n, t);
+      const col = lf === 1 ? c0 : [c0[0] * lf, c0[1] * lf, c0[2] * lf];
       let sz, sp;
       if (real) {
-        // 实机模式：尺寸按「格」换算（p.f 即每格像素数）
+        // 实机模式：尺寸按「格」换算（p.f 即每格像素数；lookSize 已含「尺寸（格）」）
         const look = lookOf(layer.particle);
-        const shrink = lerp(1, layer.sizeEnd / Math.max(1, layer.size), t);
+        const gain = layer.pSizeEnd > 0 ? lerp(1, layer.pSizeEnd / Math.max(1e-3, sz0), t) : 1;
+        const shrink = lerp(1, layer.sizeEnd / Math.max(1, layer.size), t) * gain;
         sz = Math.max(1, lookSize(layer, look) * p.f * (layer.size / 7) * shrink);
         const grp = texFor(layer);
         if (grp && grp.frames.length) {
@@ -3695,7 +3868,7 @@ function render(now) {
           sp = lookSprite(look, col[0] | 0, col[1] | 0, col[2] | 0);
         }
       } else {
-        sz = Math.max(0.6, lerp(layer.size, layer.sizeEnd, t) * p.f / (H * 1.55 / 7));
+        sz = Math.max(0.6, lerp(layer.size, layer.sizeEnd, t) * p.f / (H * 1.55 / 7) * lerp(sz0, sz1, t));
         sp = sprite(col[0] | 0, col[1] | 0, col[2] | 0);
       }
       ctx.globalAlpha = clamp(a, 0, 1);
@@ -3841,6 +4014,7 @@ function renderBoard(scene) {
   const g = ctx2, cam = currentCam(BH);
   drawScene(scene, g, BW, BH);
   if (state.grid) drawGrid(cam, scene, g, BW, BH);
+  if (state.steve) drawSteve(cam, g, BW, BH, 1);   // 画板保持中性亮度，方便编辑轨道
   drawBoardParticles(g, cam, BW, BH);
   drawBoardOverlay(g, cam, BW, BH);
   updateBoardDbg(performance.now());     // 调试台（内部 5Hz 节流）
@@ -4194,12 +4368,12 @@ function bbRange(parent, label, min, max, step, get, set, opts) {
   boardSyncers.push(sync);
   return sync;
 }
-/* 绑定「当前图层」字段的滑块（改动即写回图层，右侧检查器与导出代码同步） */
+/* 绑定「当前图层」字段的滑块（改动即写回图层，右侧检查器与导出代码同步）；默认附数值输入框 */
 function bbLayerRange(parent, label, key, min, max, step, opts) {
   return bbRange(parent, label, min, max, step,
     () => { const l = sel(); return l ? (+l[key] || 0) : 0; },
     v => { const l = sel(); if (l) { l[key] = v; syncInspectorRows(); scheduleCode(); } },
-    opts);
+    Object.assign({ num: true }, opts));
 }
 function bbSelect(parent, label, fill, get, set) {
   const row = bbRow(parent, label);
@@ -4638,6 +4812,7 @@ function buildBoardExtra() {
   }, () => { const l = sel(); return l ? l.particle : ""; },
     v => { const l = sel(); if (l) { l.particle = v; scheduleCode(); buildInspector(); } });
   bbLayerRange(par.body, "数量", "count", 1, 1200, 1, { num: true, fmt: v => v + " 个" });
+  bbLayerRange(par.body, "尺寸(格)", "pSize", 0.05, 4, 0.05, { fmt: v => (+v).toFixed(2) + " 格" });
   bbLayerRange(par.body, "尺寸", "size", 0.5, 30, 0.5, { num: true, fmt: v => v.toFixed(1) });
   bbLayerRange(par.body, "尾尺寸", "sizeEnd", 0, 30, 0.5, { num: true, fmt: v => v.toFixed(1) });
   bbLayerRange(par.body, "存活", "lifetime", 5, 200, 1, { num: true, fmt: v => v + " tick" });
@@ -4683,6 +4858,12 @@ $("#btnGrid").onclick = e => {
   state.grid = !state.grid;
   e.currentTarget.classList.toggle("on", state.grid);
 };
+/* 史蒂夫中心点：显隐调试（预览与画板同步生效） */
+$("#btnSteve").onclick = e => {
+  state.steve = !state.steve;
+  e.currentTarget.classList.toggle("on", state.steve);
+  toast(state.steve ? "已显示史蒂夫中心点（原点为身体中心）" : "已隐藏史蒂夫中心点");
+};
 
 /* ---------- 示意发光 / MC 实机效果 切换 ---------- */
 function updateHintBadge() {
@@ -4706,31 +4887,141 @@ $("#btnReal").onclick = e => {
    ========================================================= */
 const TEX = { lib: new Map(), ready: false, count: 0 };
 
-/* 注册名与贴图文件名不一致的常见粒子；值为 null 表示该粒子用的是方块/物品贴图，不做还原 */
+/* 注册名 → 贴图分组：由客户端 26.2 的 assets/minecraft/particles/*.json 生成（共扫描 112 个粒子定义）
+   同名粒子不在此列出（默认按粒子名直接查找）；null = 该粒子用方块 / 物品贴图渲染，不做还原 */
 const TEX_ALIAS = {
-  angry_villager: "angry",
-  damage_indicator: "damage",
-  cherry_leaves: "cherry",
-  pale_oak_leaves: "pale_oak",
-  electric_spark: "spark",
-  sweep_attack: "sweep",
-  wax_on: "wax",
-  wax_off: "wax",
-  white_smoke: "large_smoke",
-  bubble_column_up: "bubble",
-  current_down: "bubble",
-  dust_plume: "dust_plume",
-  dust_pillar: "dust_plume",
-  dust: "generic",
-  dust_color_transition: "generic",
-  effect: "effect",
-  instant_effect: "effect",
-  entity_effect: "effect",
-  block: null, block_marker: null, falling_dust: null, block_crumble: null,
-  item: null, item_slime: null, item_snowball: null, item_cobweb: null
+  "ambient_entity_effect": "effect", "angry_villager": "angry", "ash": "generic",
+  "block": null, "block_crumble": null, "block_marker": null,
+  "bubble_column_up": "bubble", "campfire_cosy_smoke": "big_smoke", "campfire_signal_smoke": "big_smoke",
+  "cherry_leaves": "cherry", "cloud": "generic", "composter": "glint",
+  "crimson_spore": "generic", "crit": "critical_hit", "current_down": "bubble",
+  "damage_indicator": "damage", "dolphin": "generic", "dragon_breath": "generic",
+  "dripping_dripstone_lava": "drip_hang", "dripping_dripstone_water": "drip_hang", "dripping_honey": "drip_hang",
+  "dripping_lava": "drip_hang", "dripping_obsidian_tear": "drip_hang", "dripping_water": "drip_hang",
+  "dust": "generic", "dust_color_transition": "generic", "dust_plume": "generic",
+  "egg_crack": "glint", "electric_spark": "glow", "enchant": "sga_a",
+  "end_rod": "glitter", "entity_effect": "effect", "falling_dripstone_lava": "drip_fall",
+  "falling_dripstone_water": "drip_fall", "falling_dust": null, "falling_honey": "drip_fall",
+  "falling_lava": "drip_fall", "falling_nectar": "drip_fall", "falling_obsidian_tear": "drip_fall",
+  "falling_spore_blossom": "drip_fall", "falling_water": "drip_fall", "firework": "spark",
+  "fishing": "splash", "glow_squid_ink": "generic", "happy_villager": "glint",
+  "instant_effect": "spell", "item": null, "item_cobweb": null,
+  "item_slime": null, "item_snowball": null, "landing_honey": "drip_land",
+  "landing_lava": "drip_land", "landing_obsidian_tear": "drip_land", "large_smoke": "generic",
+  "mycelium": "generic", "pale_oak_leaves": "pale_oak", "pause_mob_growth": "glint",
+  "poof": "generic", "portal": "generic", "rain": "splash",
+  "reset_mob_growth": "glint", "reverse_portal": "generic", "scrape": "glow",
+  "small_flame": "flame", "smoke": "generic", "sneeze": "generic",
+  "snowflake": "generic", "spit": "generic", "spore_blossom_air": "drip_fall",
+  "squid_ink": "generic", "sulfur_bubbles": "bubble_white", "sweep_attack": "sweep",
+  "tinted_leaves": "leaf", "totem_of_undying": "glitter", "trail": "generic",
+  "underwater": "generic", "warped_spore": "generic", "wax_off": "glow",
+  "wax_on": "glow", "white_ash": "generic", "white_smoke": "generic",
+  "witch": "spell"
 };
-/* 需要按图层颜色着色的贴图（原版里就是「灰度贴图 × 颜色」） */
-const TEX_TINT = { dust: 1, dust_color_transition: 1, effect: 1, instant_effect: 1, entity_effect: 1 };
+
+/* 需要按图层颜色着色的贴图（原版里就是「灰度贴图 × 颜色」）：generic / effect / spell 三套都是灰度图 */
+const TEX_TINT = { dust: 1, dust_color_transition: 1, effect: 1, instant_effect: 1, entity_effect: 1, witch: 1 };
+/* ==== TEX_BUILTIN_START（由脚本生成：原版客户端 26.2.zip 的粒子贴图）==== */
+const TEX_BUILTIN = {
+  "angry":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIBAMAAAA2IaO4AAAAHlBMVEUAAAD/9cb/2ACzs7Oampr/agB5eXljY2NRUVErKysyLAf9AAAAAXRSTlMAQObYZgAAACpJREFUeNpjAAO2BNUJDC1GwpYMxoHJngzJRWIZDMyZojMZOGYqgOQDGACFGgbMqADFTQAAAABJRU5ErkJggg==", "big_smoke_0":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAOElEQVR42mMYBXQANWUF/8nWSKFmTEyxAdlpicQZAlIIxBBNCBpuANGGQDFlmmF8mBxJhoyQlAoAAF9LgkyO72wAAAAASUVORK5CYII=", "big_smoke_1":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAQElEQVR42mMYBTQC9ZVF/5Ex2ZpJNigvMxmkEC8m2gAMwxDihA1BwsiGwcQIe4Uizdlpif/RDMKlmbBBIyTVAgA2Z3kltoNbTwAAAABJRU5ErkJggg==",
+  "big_smoke_10":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAM0lEQVR42mMYBYMV1JYX/wfRdZUlYLq7pQ5IkwBgmvs6Gv/DNJNtAJAm3xCY5tFIHewAAEyTHdXeRNRgAAAAAElFTkSuQmCC", "big_smoke_11":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAG0lEQVR42mMYBcMe1FWW/IfTZALKNY/Gw1AAAPjQCanJId9jAAAAAElFTkSuQmCC", "big_smoke_2":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAACBe3R8dnBvamUt1rjKAAAAAXRSTlMAQObYZgAAADlJREFUeNpjQAesDkBCNISBgTE1FMi7GebAwH81tIGBeWfkBwbmv+EFDAxf5x9gYLD5D1TH/AddOwDL+wzxmcztFAAAAABJRU5ErkJggg==",
+  "big_smoke_3":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAACBfHZ8dnBxbWcHe9lrAAAAAXRSTlMAQObYZgAAADlJREFUeNpjQAKsIEI0BESEOjAxOAAZjKGhAQxMpaETGJh/Ti9gYP5WdYCJwSMVKPP/P5Cw+cCABgCbCAvBHPTxygAAAABJRU5ErkJggg==", "big_smoke_4":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAACEf3iBe3R0b2oH7mVvAAAAAXRSTlMAQObYZgAAAEJJREFUeNpjQAJMIUBCNNKBgSE0DESEBjAwhoYFMPCGRl5g4ItML2DgL4v/wMBzb/8HBub/fw4wMHz+D9TBcwDJDAAtWhCYpZ32gQAAAABJRU5ErkJggg==", "big_smoke_5":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAVElEQVR42mMYxqC9seo/OibJgMbqEhTNMD4ZNmNiwpopNwDhZHSx8sJc7IZg0QhSjM6H0ZgGQBXDFMHYuDB2b8Ak0BSjG4Y/JvDZiK6ZZIOGaZ4BAI8Y0OgI5kuxAAAAAElFTkSuQmCC",
+  "big_smoke_6":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAACKgn2Be3R4c24RevDhAAAAAXRSTlMAQObYZgAAADNJREFUeNpjQAeMAUAiKgTICA1lYGANjXQAEuEHGHjnvj/AwFT+4wADw//9QCXGBgzYAACcewq6s0IZjgAAAABJRU5ErkJggg==", "big_smoke_7":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAATUlEQVR42mMYBfhBd0vdfxgmWWNjdQkYk2wIWDECoxhSVVrwnxgD0G0mzRVAW1BsR+MTZwAahhkE9wJRhqAbRnZUVhTn/YfRowkbOwAADE9z/mfwGb0AAAAASUVORK5CYII=", "big_smoke_8":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAQklEQVR42mMYBTQGvW0N/2GYZI2N1SX/kQ2oLS/+T7KtcIMQbMKGAG2CaUJ3AfGugChGYKihxGtGdgkyfzRZ0QgAAFK1WXvCu7fbAAAAAElFTkSuQmCC",
+  "big_smoke_9":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAN0lEQVQ4y2NgGAWDGNRVlvzv62gE4+6Wuv9ka4axSTYAhEE2wwwhyxXImCTNteXF/5HpUUBjAADWCzQZ2QW4uwAAAABJRU5ErkJggg==", "bubble":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAANUlEQVR42mMgCShu/f8fhrFKovMxOJ/+//8PxHCJ8ptQNkIBhMauAA4wFcAVYZVEFwRhZEkAFkw8ZCraQW4AAAAASUVORK5CYII=", "bubble_pop_0":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAM0lEQVR42mMYBYMdhC3c+x9EZ2y7DKTJAHOf/P/fdOYFeYZANCIMgbmGLENAmkcjdDADANNcIcz1gsGiAAAAAElFTkSuQmCC",
+  "bubble_pop_1":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAANElEQVR42mMY5iBj2+X/IBy2cO9/kjWTrolyQxGKyJNH+JtyAyiQp38AEtYESwsMowAnAABTdyzcOwcGhQAAAABJRU5ErkJggg==", "bubble_pop_2":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAKklEQVR42mPABsIW7v0PwgzkALBG+gP6uxTTkOEWXgMfGKMpELdGmngTAKKbIGUvX7D8AAAAAElFTkSuQmCC", "bubble_pop_3":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAG0lEQVR42mPABsIW7v3PMArQwWhYjYbkcA8vAEO1Cs1cFpbHAAAAAElFTkSuQmCC",
+  "bubble_pop_4":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGklEQVR42mMYnCBs4d7/DKNgNLBHQ5K+rgUAGFAKzT1UNdEAAAAASUVORK5CYII=", "bubble_white":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAANUlEQVR42mMgCVy4cOE/DGOVROdjcD79//8fiOES9+/f/8+ExSZGgsYjm4CuCFMSXRCEkSUBExM5AuBIiLUAAAAASUVORK5CYII=", "cherry_0":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAG0lEQVR42mMAge877/x/v/zsfzADhpkYEIARAKKCEZKwlyJFAAAAAElFTkSuQmCC",
+  "cherry_1":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAG0lEQVR42mMAgRczD/9/0b3nP5gBw0wMCMAIAIKoED6U7GcuAAAAAElFTkSuQmCC", "cherry_10":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAGUlEQVR42mN40b3n/4uZh/8zgACIAcSYAgC46RbBVH0B0wAAAABJRU5ErkJggg==", "cherry_11":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAGUlEQVR42mO4lb3s/4Oydf8ZQADEAGJMAQCVqxT9FcW4cAAAAABJRU5ErkJggg==",
+  "cherry_2":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAG0lEQVR42mMAgQdl6/7fyl72H8yAYSYGBGAEAGPwDvpv75ITAAAAAElFTkSuQmCC", "cherry_3":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAG0lEQVR42mMAge877/wHYTADhpl+vPvIAAWMAMZkFJLTTmEOAAAAAElFTkSuQmCC", "cherry_4":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAG0lEQVR42mMAgRczD/8HYTADweneA2EwMDAAALsLFsHRWz+bAAAAAElFTkSuQmCC",
+  "cherry_5":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAG0lEQVR42mMAgQdl6/6DMJgBw0y/vv5ggAJGAIayEfqYi8MrAAAAAElFTkSuQmCC", "cherry_6":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAGUlEQVR42mP4vvPOfxBmAAEQA0Pg/fKz/wHikRil+OgTOQAAAABJRU5ErkJggg==", "cherry_7":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAGElEQVR42mN4MfPwfxBmAAEQA1Oge89/ALuzFsFXLCa3AAAAAElFTkSuQmCC",
+  "cherry_8":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAGUlEQVR42mN4ULbuPwgzgACIgSFwK3vZfwCY/RT9h1Zl1QAAAABJRU5ErkJggg==", "cherry_9":"iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAGUlEQVR42mN4v/zs/+877/xnAAEQA4gxBQDdHxilb7P2xQAAAABJRU5ErkJggg==", "copper_fire_flame":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAANUlEQVR42mNABm5Nvv8Z8IHMTXn/8Sqa+Xrmf6AiMhWAJIAKwBinbhCAmYJLAVwRLiswTAAAvL9A7SjOjf8AAAAASUVORK5CYII=",
+  "critical_hit":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAJ0lEQVR42mP4/58BDoBsCHUOyDj3H8qFMMEYoRYLFyGEaQaaLZgAAGIPL4NEZdaFAAAAAElFTkSuQmCC", "damage":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAPklEQVR42mMAgQQFhf8gjM6GS164cOG/g4MDSAJEgzBCEVQQhjEVBEtLY1UAFEdYA+TglERVhCmJqYiBVAAA6pU6bsnWO0gAAAAASUVORK5CYII=", "drip_fall":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFklEQVR42mPAAf7/v/ofReAqSIB2AAD8kgd7JOdjfQAAAABJRU5ErkJggg==",
+  "drip_hang":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFklEQVR42mOAgP//r/5nQAZXQQJ0BAB7uwd7sHwvOQAAAABJRU5ErkJggg==", "drip_land":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAEklEQVR42mMgE/z/fxUMGagEADzaB3uRuKYOAAAAAElFTkSuQmCC", "effect_0":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFElEQVR42mMgHvz/j8G9+p+BSgAA2YwF0RX/uzgAAAAASUVORK5CYII=",
+  "effect_1":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGklEQVR42mOgAPz/j8TZ/B9D6Or///+JNQsAE4sJgXTR49oAAAAASUVORK5CYII=", "effect_2":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAI0lEQVR42mMgFvz/fxUIEVwoEygEE4DgzahqoAIIMOk/VuMBMuUUaG4C2KsAAAAASUVORK5CYII=", "effect_3":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAALUlEQVR42mMAgc3/J/1nAAMolwEZXAVz/wMBksB/qCCKCgiGC8FVwJhgM7ADAAbVIDJtDsEIAAAAAElFTkSuQmCC",
+  "effect_4":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAK0lEQVR42mOAgP//rwIhkAHjQmigEIQLISFCYCYCb4YIIDROgmoCAwYiAQAVPiJ8KNEn4QAAAABJRU5ErkJggg==", "effect_5":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAK0lEQVR42mPAAf6DARIXiZ4EJP5DMZjcjMSBCEA5CEGgELpZDFf/AyFUDQDnKiwEOraTEwAAAABJRU5ErkJggg==", "effect_6":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAALklEQVR42mMAgav/N/+f9B/EgnIZkMH//xBBEIALbP4Pk4SrwCmAoFClQAbCuAA/7SZWVmhy8QAAAABJRU5ErkJggg==",
+  "effect_7":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAK0lEQVR42mMAgf9QwAABQAacheAihK4iC4B4m5EFgDwIgQ4m/Z/0nwEXAACs+hvRCflkrAAAAABJRU5ErkJggg==", "enchanted_hit":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAALUlEQVR42mOo+s8ABP/BJITNMPP/OSDj3P+ZEC6IiUL/h1AwNqYKTDPQbMEEAHsqIqXPhZXjAAAAAElFTkSuQmCC", "explosion_0":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAI0lEQVR42mMYBaNgFNAB/IcCsrUjwEg1AGHEaHIaBaOADgAAE00/wZftAhQAAAAASUVORK5CYII=",
+  "explosion_1":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAKUlEQVR42mMYBaNgFBAG/6GAAu0UGPEfDYwoAzCNoDweRhP0KBgFhAEA+jxnmWV32m0AAAAASUVORK5CYII=", "explosion_10":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAAAnRSTlMAAHaTzTgAAABISURBVHjavdMxDsAgEANB///TkxoZFKFE53YHusv0gM8GGBbzXzRwAv4Dql8D+y4l9j2wdg1Ycz/q5QLkpZfo3iK9ykczfa4PjB8S/CWFA6QAAAAASUVORK5CYII=", "explosion_11":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAAAnRSTlMAAHaTzTgAAABLSURBVHjaxdM5DgAxCMVQ3//SnnYUfQUhkaXkOXQw/1RnkuOFjeLhClW9FRi9FRi8FaB7R83ufxDYZbRy/pQdKofKoXIgck5mj/kDRn/+AldRXegAAAAASUVORK5CYII=",
+  "explosion_12":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAWUlEQVR42uXVOw6AMAwE0dz/0o8uTRQJs3wCTL+TtSLZ7SZYQwK5As8qAF7dgQ900PmrgOUEHI1z1gDE7xPWh1qc0powsPt3TWgjCkyKJvFOEC7NXZdcdrc38qm0WltBwt8AAAAASUVORK5CYII=", "explosion_13":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAUElEQVR42u3TQQrAMAgAwfz/09NraQioFETIXsNuPOiaB/0J+hM0JBpmmBLgBijrvQEvhv/PXzoVnc9DTiZ1njYSy8lB3xFknYnrxciKE1UfOfh0mg3kzAYAAAAASUVORK5CYII=", "explosion_14":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAAAnRSTlMAAHaTzTgAAAA0SURBVHjaYxgFDAz/yVaAUEEHBf8Hv4L/1FBAcwP+Uyr/f+Dk/2ORR/D/QwEObdil8WkGALFxX6GYCkRkAAAAAElFTkSuQmCC",
+  "explosion_15":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAAAnRSTlMAAHaTzTgAAAAiSURBVHjaYxgFo4Ca4D/lCmhuwH+KDRiU8gjp/wSkiZcFAE7gGuY4EwZcAAAAAElFTkSuQmCC", "explosion_2":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAKUlEQVR42mMYBaNgBID/UECBZgSgtwH/sYCRZAD9Y4GwIaNZahSMAAAApAmfYTDHgAgAAAAASUVORK5CYII=", "explosion_3":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAMElEQVR42mMYBaNg8IP/UECBZgQgWzsC0NOA/zjAsDOA/rFAv4SEachoph4Fgx8AAK823yGlh/YjAAAAAElFTkSuQmCC",
+  "explosion_4":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAANUlEQVR42u3UoREAIADDQPZf+rH4HK7xier1jPEZD1GHqEPUIeqwAKcHUqIOqU85JHYt4zMX3pI22Bf0yY4AAAAASUVORK5CYII=", "explosion_5":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQAAAABbAUdZAAAAAnRSTlMAAHaTzTgAAAAoSURBVHjaYyAasD8AEvI/gIT9HyBR/w9G/P+Pk0CoA2sDGwA2imhbAZm8GFswfckSAAAAAElFTkSuQmCC", "explosion_6":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQAAAABbAUdZAAAAAnRSTlMAAHaTzTgAAAA4SURBVHjaYyAGsD8AEvI/gIT9HyBR/w9I/P8PJD4DCcbP/xsYGP9jJ8DqQARYG9gAsFFgQ4mxGgAOPSBHhBT3swAAAABJRU5ErkJggg==",
+  "explosion_7":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAS0lEQVR42u3UIQ4AQAgDQf7/6T2LITRcmiBY33EQ1+5Ijce5wXiE0CQCNSfPa8IJgAKAH4Bi3gJNywGdiPgG/LdgvEfDQxGRe/C7e/qYNeeWKLD2AAAAAElFTkSuQmCC", "explosion_8":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAVUlEQVR42u3VMQoAIBADwfz/02srCOYwpHP7DBai+lVjKxg/IFwazw9sSgC4E+WAnzuiBcAUgCYAZl4HzEUywDgpIqQYiAipCUjR3BOtJ80j/4uptgAF0U3PSPC+BwAAAABJRU5ErkJggg==", "explosion_9":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAWElEQVR42u3VMQ4AIAjFUO5/6bq6SBUT48Cf6VuJXjamXaQFBtbYdi6E5UJY7oTmTnwJwAkAnwIguQMguQMg+XTlhOd++hKIKOQVIvJp7tPcZ3mB6SeXbQC8wUXX7jCCrAAAAABJRU5ErkJggg==",
+  "firefly":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAEElEQVQoU2P4///1f4ZRAAD+uwPp+TreJQAAAABJRU5ErkJggg==", "flame":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAMklEQVR42mNABv9BCB/4n8XwH6+i/zeACrLIUIAw/gYE49b99dh/mCm4FMAV4bICwwQAKPo8XH/SsCAAAAAASUVORK5CYII=", "flash":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAACzUlEQVR42qWV6W7bMBCER5R813Yc9Hr/12uBpLIt66DkDj5sbaHpv3KwFMNwRntRLu7651hpobtKFZKfk7LEqtNfo7BAkjhYMFdKfibmGCEyMd/ByJ40VZKgxryAWBrIBH3Csi2g0oZENaNX0EpQsbJBHbHSlm2FkOSJgGb0yljYlvjiPd4zmDCApNEzwyuFB6AM8hKsvSqREu8dbJ16o1Oh/JQIAY5D11ZrY6MtfiThgdGqsd1wnOgZuRJ+POg7bYyjNqxWkYMO+loXsvKsSxEesF0ZG4gH40V7faIbpKxeV9UGBddIMbM5UQUybqxk1yF/1snzQdvw4Kaa0JKI3MhmhQeroC/BXgfTv+jVOJq0xIOrdlp5jeOkMiMzCXJiXvjIzpSDTnq1xHd9M74Cr7xzMizqU9QIZuSgjCysETjqBR8O2qjEZRN4drrpooby0qsqTBQS+LAkC3tLOBTbFuy0B04umVg+368VHswqQSIJZRPdSNuyR2Hn7kcIsaw4njx7xaEEPBCnxQ3OMHMBkv5vpERyot+5cz2rgSIBdkf2sjL7nCS4IpnACImeTF/VeO4FBerNO1fPndGze5dsEeMd3RwHa/0yap3VBM5Gzb5FkJ1gmFlJoq9RbWlaNwrJHaITByR+6g3ZRl2EM5rZVuq0wIPBq6upNXTaxgI0EFfpzXhH4KpWkSPKiDuJ+HvVokB408wvk/GuHxY5q53dhp4Q0MrebE2o2ellt7kfQvpm98+WOJNe6FxqIYAPBSksJOQ6Xei7CEYt6b0YrdFFGv8IGBaYFZRrwyetFP6QoUZtAA9gIRA+sKImEBraFw+iGzqM+DlDISkXH1UEUM3+q7eVAEmqlKGOJHia5SC+u0gQDi3F+wulh3+kjbl/0hGYS8Th0rPJtvgvIHEaWAtTJJGDHGKNCAKPwfswg86Z/zp/HAtp9j2gT9kfPh79DQgtr0hc4IjNAAAAAElFTkSuQmCC",
+  "generic_0":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAD0lEQVR42mOgJvj/n2ytAHUTAf8H6kvqAAAAAElFTkSuQmCC", "generic_1":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAEUlEQVR42mMgG/z/j0WIbNMAD4cD/YoDvAwAAAAASUVORK5CYII=", "generic_2":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFUlEQVR42mMgG/z/jykEBPg14ZQHALDlB/mbPPJ6AAAAAElFTkSuQmCC",
+  "generic_3":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGElEQVR42mMgBfz/j8rBlIcIMuFRgcNoALxOC/ec2V0jAAAAAElFTkSuQmCC", "generic_4":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGklEQVR42mMgFvz/D8IoAjAuphCCiyGEw3gA+sUV61m95KwAAAAASUVORK5CYII=", "generic_5":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAHElEQVR42mMgFvz/D8IoAnAhhDyqCjBAU4HDeAA+nhvlBdex7QAAAABJRU5ErkJggg==",
+  "generic_6":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAH0lEQVR42mPACf7/R+YAAXYhIEDjIFRAAZwLw1jsAAAf5yfZJ1+SxAAAAABJRU5ErkJggg==", "generic_7":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAJklEQVR42mOAgP//QSQK5z8YwISAAESiyUNIVA4EwLgoQghhDEMB+kQ5x0N3gHUAAAAASUVORK5CYII=", "geyser_base_01":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAQklEQVR42mMYEHD/Px4pICQkjVPRhf8XEAqAbCwKIEog9A6sZsAlL+ByyQ6gJEgar2N34HEHwjdQyyB8nK6hW8wAAM1DYqEdRcw7AAAAAElFTkSuQmCC",
+  "geyser_base_02":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAS0lEQVR42mMYfOD+/wtAiFMSAXFI41FyAVUa06ILIEGIFJzegaxkB1AAChGmYFOwA7c1O8DSQBImjekOoDTYXrAUvvDYAbWMWoEPAL0PmRb/Ur5MAAAAAElFTkSuQmCC", "geyser_base_03":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAABDSURBVHjancxJDcAAEMPA8EcUGGZgKpV6Kc+q8/Qe+QjIQpWd6yYUVTQnxdtz8SzAW7DzpUBRbS5ti0KzBZrR0vxzAD4kTwyubKAIAAAAAElFTkSuQmCC", "geyser_base_04":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAABCSURBVHjanc+xDcAwDAPB7D8Rx/gNfpUUpmwkVRB1f4UAXr8PlWeqbGqrrx5oMG9gdSQDKJAsCBAKldOV7D6Uz6tuJNlUDjdYhtAAAAAASUVORK5CYII=",
+  "geyser_base_05":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAAA7SURBVHjarcjBCcBAEMNA91+Ry1AHaiWQg13uGYhf1uTTkL0qDviuSKeP9IZp7k4BZSGcdSDdXmnz2x6M8Eo5RLy0dQAAAABJRU5ErkJggg==", "geyser_base_06":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAATElEQVR42r2OsQ3AMAzD8v9FOkMf6BR2dNEmDrJEGkkZHscJocEmBNPu3QnCGLFcB6P5jVD1XwkbwRSc/mHeFfoKWuNShFHhPmLcywNBEYsC3vGbxgAAAABJRU5ErkJggg==", "geyser_base_07":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAR0lEQVR42s3OsQ0AMRACQfdf0ZVBB5SyHxKcHsmZSRkkzlWMKbUwRtS9GhiEGOqHQf/MGKOQXYfMBkoZsC+KvQ/pF4OG81g+ME1xKTVH7akAAAAASUVORK5CYII=",
+  "geyser_base_08":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAPUlEQVR42mOgI7j//8J//NJAuAO3kh0gabCCC7hMgkrjMwkqjVCC6Y77QAmwNA4FMEnclkCkEfpxO3aQAQB36k/PSJlDJAAAAABJRU5ErkJggg==", "geyser_plume_01":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAT0lEQVR42s2RwQmAAAwD3X+rrJAJusn5CRRpVfBl82uuENLjX2NMcWsXEeYRMEYstimM0IYUzrplBqAJ9Iz7FyS62B0vmjGVDmJvPXx6wAkLDZ36n9XXMQAAAABJRU5ErkJggg==", "geyser_plume_02":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAABESURBVHjarY/BCQAhEMS2/67SQiqYUg5OVlF8ml/CwrD1kCTumujpMl0TFKYr0CcZCqxAUz9nEEbp3UgEZM2WClx/+ACfu1a2gTXGXgAAAABJRU5ErkJggg==",
+  "geyser_plume_03":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAABOSURBVHjapY/BDcAwCMSy/1bWbeAJGKVSaEQe/ZWfLQvB+jF6U5XizVXC0sNtTmWVnQAtsDlpASpJkl4CbMErFICdrBYezhw5xYzy9dMDwElcZAkBdx8AAAAASUVORK5CYII=", "geyser_plume_04":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAABKSURBVHjajY/BDYAwDMRu/61QNvAEHgWJVpBWPOqfreRxOUXdXbcALYlCu0IBEJdQ882hVBXYfA31cGHSvUgSecsI8UuZMKi/mTcR6nGLTtvZlgAAAABJRU5ErkJggg==", "geyser_plume_05":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAABQSURBVHjadc+xDYAwAANB77+WJQb4CX4UigBJELg7F5ac76i8rESdBlDZzcFioF2KzmKAdjguhkRtgd6N0iVEgYFrlWfBQJIA0uJ2Bvw5fgIfk4mHRszgJQAAAABJRU5ErkJggg==",
+  "geyser_plume_06":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAABNSURBVHjadc+xDcAwDANB7r8WN/gJfpQUQuzAiNndFwKU21Q5rBy2h8FlVAt+Ld0BlRbGAkLLOlGgbR0rnbECY5KwCxNQZm2ShHf/bz/XLYP2yBXLbgAAAABJRU5ErkJggg==", "geyser_plume_07":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAABSSURBVHjabcvBCcQADMRA9d+WOlAFLuXgYkMemZdXYAAqXpo/Zmb3qQHYu6YKuG1l+9FMaRazSt1wP9qFugJ2OxXAygsCmmq5ARUfxdnA2hIffq4qledwM//CAAAAAElFTkSuQmCC", "geyser_plume_08":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAABLSURBVHjaVcxRDQAwCAPR+reFg1NQKUvWMBhf3EtAPfZajWyA2/gOtExHSA9M1weOzAtv4R1F8jZQ/9cAtqkFWRskKWsajaR7eHUAPiilD2hAVsIAAAAASUVORK5CYII=",
+  "geyser_poof_01":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAP0lEQVR42mMYEHD/Px4pICQkjVPRhf8XkBRcwK3kAhjuwG4RTPICLpfs+A+BeB27A587EL6BWAbi4XQLHWMGACgsXRxyyKVlAAAAAElFTkSuQmCC", "geyser_poof_02":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAABASURBVHjarY+xDYBAEMOy/0QewxtkFaTXSQdUFLizmyj5kepDD2/f4rhusGJlCiq2NYNCu4XkBHeboEruKJ8+XEk7P4Q8QeuQAAAAAElFTkSuQmCC", "geyser_poof_03":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAR0lEQVR42r3RsQ0AMAgDwew/EWN4A0ZxGiuWIosSXP51nOVrNptD9mIEE3GeCIgvgjAwgWIgRWj1aAk8UsqaQCA5G4kt/ucC0dCafwLrl1kAAAAASUVORK5CYII=",
+  "geyser_poof_04":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAABBSURBVHjanY+xDYBAEMOy/0QewxtkFYpD3BcUCBeR7C75T9ueerP+FrTt6dU7qJOUCcsEVGfIU2A9gQCQhfD51AWRQU9nb/riRwAAAABJRU5ErkJggg==", "geyser_poof_05":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMAAHaTzTgAAAA8SURBVHjarcuxDQAwCANB7z/Rj+ENWCUSIKRQpMpV/sJ6i9gd18amq9gwnXbbSvY8lHADlWnUqESDzG8OMexJQpCL3I8AAAAASUVORK5CYII=", "geyser_poof_06":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAR0lEQVR42mOgHbj///5/vNIgeOE/DgkQfQEMsUjClFz4vwO7NE7DgQbCJS9gU7ADKnEBtwKIkh0gDLMfU8kOTElMZWA8qAAAlLFsrMV/2tsAAAAASUVORK5CYII=",
+  "geyser_poof_07":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAOElEQVR42mMgE1z4T0D6wv8d+JUApckE9//f/09AGo+SC1DpC/gUXIBC7C4HSiA8iEMJCDIMPQAAM2o2MRXD5H0AAAAASUVORK5CYII=", "geyser_poof_08":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAIklEQVR42mMYomDHfzyS9/9fICANhHhM2AGWxmsFWHoYAgBL+Bb6QDVP4gAAAABJRU5ErkJggg==", "glint":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAMklEQVR42mNAAdME/zPgBZu1UBRg6j7p+x9EY0gAdUIkn00D0WA+SBynCWS5AWEKqQAAZ7cfcJFli5wAAAAASUVORK5CYII=",
+  "glitter_0":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAD0lEQVR42mOgJvj/n2ytAHUTAf8H6kvqAAAAAElFTkSuQmCC", "glitter_1":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFUlEQVR42mOgAPz/j8oFAgwhYs0CAEddCfeNt414AAAAAElFTkSuQmCC", "glitter_2":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAEklEQVR42mMgG/wHA8ICxJkGABmnEe+frIXhAAAAAElFTkSuQmCC",
+  "glitter_3":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGUlEQVR42mMgHvz/j8oFA1QuphCGJhyGAwDr4hnnfq2DCgAAAABJRU5ErkJggg==", "glitter_4":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAF0lEQVR42mMgFvwHAwQXDogUQAhhNR4AkHYp19ewG2gAAAAASUVORK5CYII=", "glitter_5":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAHElEQVR42mPACf7/R+WCAYILB3AudiFMTVhtAQBiwDHPL5JO+QAAAABJRU5ErkJggg==",
+  "glitter_6":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAF0lEQVR42mMgFvwHAwQXDogUQAhhNR4AkHYp19ewG2gAAAAASUVORK5CYII=", "glitter_7":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAHElEQVR42mPACf7/R+WCAYILB3AudiFMTVhtAQBiwDHPL5JO+QAAAABJRU5ErkJggg==", "glow":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAN0lEQVR42mOAgDf/GVDBH1SBC/+//t8NE3rx//1/EHj+//X/izDBw/+f/F+PqukuuqGX/jPgAgCv6h/VGwkFEgAAAABJRU5ErkJggg==",
+  "goldheart_0":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAHCAYAAAA1WQxeAAAAI0lEQVR42mOgHvi0Q+s/nMYGfp00/w+SvNev/h+nKWBJqgMABw8QmYUcKQ8AAAAASUVORK5CYII=", "goldheart_1":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAHCAYAAAA1WQxeAAAAM0lEQVR42mMgGvw6af4fTqODP3cD/4MwSPLTDi0wRtcNUgCXvNev/h+bFQhJXAAsSSoAAPnGLjF9WY/8AAAAAElFTkSuQmCC", "goldheart_2":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAHCAYAAAA1WQxeAAAAQklEQVR42mMAgV8nzf+DMJCJwodz/n9q+P/nbuB/mMSnHVpgfK9f/T9IAUQSIYGhAJckCMOtwSWJAFBBhCQ2gE0SABY+cQqYw9qDAAAAAElFTkSuQmCC",
+  "gust_0":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAKklEQVR42mMYBaNgFBAGH/5DINnaEZBs7Qg4ogzANILyeBhN0KNgFBAGAJdCZI1arJIIAAAAAElFTkSuQmCC", "gust_1":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAV0lEQVR42u2VMQ4AIAgD/f9r/QGOnWwamoYFbqWXaBTOFqtbwAgDIwzacdCOg3YcpAS3dBKCf6OoYE2SgLfYgsAR7Eucfgfzf8FSJAaKrkgOVS7ZJcfqAYFsJI745Xl/AAAAAElFTkSuQmCC", "gust_10":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAPElEQVR42u2VwREAQAwBt3qFacyVIXPJ/vEC81CUjhgU6MldTQefAeDwK0rPYj4OXAEc2DuCSu+5JlbrAVNyLV1KMsRxAAAAAElFTkSuQmCC",
+  "gust_11":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAH0lEQVR42mMYBaNgFFAVtP2nghGjYTYaZqNgFAwwAAC51gYVl82YsAAAAABJRU5ErkJggg==", "gust_2":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAAAnRSTlMAAHaTzTgAAABaSURBVHjavZPBCQAgDAPdf6xM1BGE/kLgfLTYl/EOLNKe5aouoHYIbiFxvXPcRAIDmgpuBnADEyG5lEYZl0hQ10CAJ6DJDx8FRtkROQ8MjxxnHnteHF695X2+/slg8UFgluEAAAAASUVORK5CYII=", "gust_3":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAZElEQVR42u1VsQ3AMAzy9RzWi/iADpXq0S1MiQJbECiKYlwbgqIGbbIHOvXtjoNgRPShHUFR0VP/sLdjBVx6aNubdgAEwQ/Ay3KANKAj6mCAPUzxOIeFElZaWKphrWeLZcdvfQOVFYFBYnkOfAAAAABJRU5ErkJggg==",
+  "gust_4":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAANUlEQVR42mMYBaNgBIBD/yGQbO0ISJ52yg1og0FyjABrR0DSDWijzACEERDWaIocBaNg8AMAtvxJTlDD5ZQAAAAASUVORK5CYII=", "gust_5":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAARUlEQVR42u2TsQ0AMAzCuL6H9bF2QkjdQGom8JLF3oKu+759SCyLWBdBYAkmbF14AekAwNsIvEoYkGToFEikK9Fn6rqxXRcUhQutFix+AAAAAElFTkSuQmCC", "gust_6":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAAAnRSTlMAAHaTzTgAAABWSURBVHja7ZAxDoRQFIQ4PQfjZFtsLIw+f6KdkRaKyfBGqrrSqhazB8AmD8xFCWqdF5XqJh0GAmBjwB+hg98HpxPaAscLdfFxsiweBK4CXKwEVT7u8gP+jE+DSTgz9QAAAABJRU5ErkJggg==",
+  "gust_7":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAAAnRSTlMAAHaTzTgAAABlSURBVHja1ZMxCsAwDMT8ej1MLyuYNLRx3aFDIVoOIgWyJLbDpNeO7Xy8wxjV/j6MuMLpm8J5/vWF/wfqEuAlU5U1MAtTN4U5JyzBLGB4ohaT6gOuCTUIkqmJAjfiiaK7ZL/fdgA7fnSnr43DdwAAAABJRU5ErkJggg==", "gust_8":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAAAnRSTlMAAHaTzTgAAABuSURBVHjazZNBCsMwDMD0ej1ML9thGyxd3RwGo7oFiRgM5mb0ZqOHpJWdr869T6ZAnQpXr1/BC4DT4sMD4xfLozwWa14ysQ9Q88egORCQdHJCDAGqANTi40heByULbTx27cE6nb8mAZSb/f39Hh/l4Z9ZpLCI7QAAAABJRU5ErkJggg==", "gust_9":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAAAnRSTlMAAHaTzTgAAABdSURBVHjavdLJCcBADMVQVa/CfmU5ZZ/YgQzR9YHB2MwsW0+qAqDJkNnTlA4kF+dWWBs7J5eizlGpk9f50ZG/cuoudek8Nh4bj68HpH0jM2A5pCkdUD2oDHJt6t0XtXhS8YLshyMAAAAASUVORK5CYII=",
+  "heart":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAQElEQVR42mMgClzW0voPwuh8OOd/S8v/Dzk5/2ES86SkwLhTROQ/SAFEEiGBoQCXJAjDrcEliQBQQYQkNoBNEgDrRU4648ekhQAAAABJRU5ErkJggg==", "infested":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGklEQVR42mPACjz/w0mEEBoXBElQgTAUq40AQZMUgdxfH7cAAAAASUVORK5CYII=", "lava":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAKUlEQVR42mOgHvifxfD//w0oBnIxFIAlvh6DKMjCrQCuCK8VIDb1HA8AVd4teuDUoh4AAAAASUVORK5CYII=",
+  "leaf_0":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAHklEQVR42mOAgeT/QKLlf8t/JEYpiAlmQJilMAYDABK5FdAeSeYkAAAAAElFTkSuQmCC", "leaf_1":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAHElEQVR42mMAgdL/IAhlJP9vATHBDAgTicEABQCVVxXQ8iE0qAAAAABJRU5ErkJggg==", "leaf_10":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAH0lEQVR42mMI/Q+CDCCQ/N8TzAEzgRwwE85hQADP/wB5NhQD7dxPjgAAAABJRU5ErkJggg==",
+  "leaf_11":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAIUlEQVR42mPw/M+AAJ7/k4EQzAz9D+GAmUAOmAnlhP4HAMnzFAOl8ewbAAAAAElFTkSuQmCC", "leaf_2":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAH0lEQVR42mMo/Q+CDCDQ8j8ZzAEzgRwwE85hQIDk/wC0XxXQoGP0+wAAAABJRU5ErkJggg==", "leaf_3":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAIUlEQVR42mNI/s+AAMn/W4AQzCz9D+GAmUAOmAnllP4HAPOiFdBhjA0dAAAAAElFTkSuQmCC",
+  "leaf_4":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAHklEQVR42mOAgdD/QKL0f+l/JEYyiAlmQJjJMAYDAPw9FOEzW9vXAAAAAElFTkSuQmCC", "leaf_5":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAHElEQVR42mMAgeT/IAhlhP4vBTHBDAgTicEABQB3fBThzF7bpAAAAABJRU5ErkJggg==", "leaf_6":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAH0lEQVR42mNI/g+CDCBQ+j8UzAEzgRwwE85hQIDQ/wCVRBThCRfRrgAAAABJRU5ErkJggg==",
+  "leaf_7":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAIUlEQVR42mMI/c+AAKH/S4EQzEz+D+GAmUAOmAnlJP8HAN51FOGOx8tGAAAAAElFTkSuQmCC", "leaf_8":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAHklEQVR42mOAAc//QCL5f/J/JEYoiAlmQJihMAYDAOYzFAM6s+xbAAAAAElFTkSuQmCC", "leaf_9":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAQAAAAnZu5uAAAAHElEQVR42mMAgdD/IAhleP5PBjHBDAgTicEABQBc9hQDScYp4wAAAABJRU5ErkJggg==",
+  "nautilus":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAARUlEQVR42mMgGsgeuvgfhOWnbfzPH1H6H5ckCGMqgkm2Vmn91+TnBUtyKIQgFMB0lQaoYlcAFIAZC8EIBQgAFYRjon0HACbYQMLO2O3WAAAAAElFTkSuQmCC", "note":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAALElEQVR42mOAgc3/J/0H0UgCGahCm4GcQGQBiCzRAp//A41EFsj4H/gfZiAAXXUYtS3tm1IAAAAASUVORK5CYII=", "noxious_gas_01":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAbklEQVR42u2SvQmAMBhEs6C9A1i5niOktMsAWUWxuMcJByJYWOSDIz+X96qUMX+d3tfD8xpubVEQIHsC9zoTk7BGCaVJgoj9TWKXQQJMFwVIIoxAoUOgOFy3ye8dJkXDY4OvBBEdcJLonPL5pzsBTS8ss5MvIjYAAAAASUVORK5CYII=",
+  "noxious_gas_02":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUAAADe3mrS0mTLw1jDs03vEJUtAAAAAXRSTlMAQObYZgAAAE1JREFUeNqtijEOAgEQhBjY/7/Z4qLRXjoI/I25/bqOr5bl9FOuSt9ldldpA9imPVOA29RyC0DdHt8GWFVPUKjqrmcUqI4ru+LDXQfAC2V/ASYnbGVgAAAAAElFTkSuQmCC", "noxious_gas_03":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUAAADS0mTLw1jDs03e3moymSXMAAAAAXRSTlMAQObYZgAAAFBJREFUeNqNjzEKxAAMwyw5/3/zDSFwhQ71JhMjkq+ZmScDk8CxAAl3NxUnwg2rTaxXpE0Sjne6tAz/ZhTCzFndoHJNjdqacyy3yybZ5u3NH2/9AOx+4C6sAAAAAElFTkSuQmCC", "noxious_gas_04":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUAAADS0mTLw1jDs03e3moymSXMAAAAAXRSTlMAQObYZgAAAExJREFUeNqdjjEKxAAMw2RH/3/zDaYcXavNAYnwHcOLmLwPibxoAN1QnWe2U51XAJOucO2CvTs0MNI7XGlciT4iT6ltt/sX99K89gB+U4YA1vNNylUAAAAASUVORK5CYII=",
+  "noxious_gas_05":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAADe3mrS0mTLw1jDs03vEJUtAAAAAXRSTlMAQObYZgAAAENJREFUeNoFwQERgCAMAMCfFNi0AKIB9LAB/Tv5DwAABMDeAZWA4AREJSK1NzFODsS8JMS3qqDdzxgdpm12oC0AAPgB1GwDzscC1l0AAAAASUVORK5CYII=", "noxious_gas_06":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAADe3mrS0mTLw1jDs03vEJUtAAAAAXRSTlMAQObYZgAAADVJREFUeNpjQAZGMAYTkqAClGZWQlHGKACVUhKCiDIaK0M1m0AZDMYMDAJQJiNMjMGZAR8AAK/XAmtRjFHMAAAAAElFTkSuQmCC", "noxious_gas_07":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAQ0lEQVR42mOgKbh0KeU/1Q08fTiCfENBmkGYKIX37mX9J9uZUEyeIYc3+/4HYpgh5LkCZgDDMACIWKHcS+D4HwVYAQAn1zsub0h5jwAAAABJRU5ErkJggg==",
+  "noxious_gas_08":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAKElEQVR42mOgCbh0KeX/6cMR/8nSDNIINACMQXyyDcEqNgpGwSjACQBqNxSq6zdvfAAAAABJRU5ErkJggg==", "ominous_spawning":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAE0lEQVR42mMYkeA/EBBUMCJDBgA6SAf5tAzG0AAAAABJRU5ErkJggg==", "pale_oak_0":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAJklEQVR42mNAB0lpCf/BjOaOhv8gjFWgpKIQKogQQAiCGDAMMxcAcvgjd8uUB8sAAAAASUVORK5CYII=",
+  "pale_oak_1":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAI0lEQVR42mOAgZKKwv8wjCKQlJbwv7mjASqIEEAIYhVgQAMAAhYjd9Jx4FsAAAAASUVORK5CYII=", "pale_oak_10":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAKElEQVR42mMICQ/+D8MMMJCUlvDfw8sdLgEXhErABTEkGLABDy/3/wAcyh4Sb0lIlwAAAABJRU5ErkJggg==", "pale_oak_11":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAJUlEQVR42mPw8HL/z4ANgCSS0hLAGC4YEh78H1kCLgiVwFQNwwAcKh4S2BpfvwAAAABJRU5ErkJggg==",
+  "pale_oak_2":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAKElEQVR42mMoqSj8D8MMMNDc0fA/KS0BLgEXhErABTEkGLCBpLSE/wBsZiN3MJji/AAAAABJRU5ErkJggg==", "pale_oak_3":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAJUlEQVR42mNISkv4z4ANgCSaOxrAGC5YUlH4H1kCLgiVwFQNwwAIqCN3UpKlcQAAAABJRU5ErkJggg==", "pale_oak_4":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAJklEQVR42mNAByHhwf/BjJKKwv8gjFUgKS0BKogQQAiCGDAMMxcA8u0gq2c/sdQAAAAASUVORK5CYII=",
+  "pale_oak_5":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAI0lEQVR42mOAgaS0hP8wjCIQEh78v6SiECqIEEAIYhVgQAMAWXcgq9wesDAAAAAASUVORK5CYII=", "pale_oak_6":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAKElEQVR42mNISkv4D8MMMFBSUfg/JDwYLgEXhErABTEkGLCBkPDg/wC8HyCrxwEk3QAAAABJRU5ErkJggg==", "pale_oak_7":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAJUlEQVR42mMICQ/+z4ANgCRKKgrBGC6YlJbwH1kCLgiVwFQNwwCQRSCrzmbC+AAAAABJRU5ErkJggg==",
+  "pale_oak_8":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAJklEQVR42mNABx5e7v/BjKS0hP8gjFUgJDwYKogQQAiCGDAMMxcAdeIeEj1bEAAAAAAASUVORK5CYII=", "pale_oak_9":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAI0lEQVR42mOAgZDw4P8wjCLg4eX+PyktASqIEEAIYhVgQAMAwwMeEl+q76QAAAAASUVORK5CYII=", "raid_omen":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAJElEQVR42mMAgXsOEf9hGENgh64zGDPAZIEcFJoBRRUIYFMFAHqFJOE+TgTKAAAAAElFTkSuQmCC",
+  "sculk_charge_0":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGklEQVR42mMYBaNgFAwFwKpl9B+EKdJMyBAAuh0IQb+sudoAAAAASUVORK5CYII=", "sculk_charge_1":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAALklEQVR42mMYBaNgBADWpNj/FBtAtiGSbh7/KTYAagiYJt35Wkb/YYYA2TgNAAC93hc32mCsjgAAAABJRU5ErkJggg==", "sculk_charge_2":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAO0lEQVR42mMYBaOAPmDS1P8UaSbbANakWLBmEA1mkwok3TzgmoFs8g0A0hADyAHkakaEg5bRfyDGawAA3dIhdfgsugUAAAAASUVORK5CYII=",
+  "sculk_charge_3":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVR42mMYxoA1KfY/MiZZM8OkqTAMN4QkzZr3XyMbAMdk2y7p5kGCAZiaSTMAihE2axkhDCAGQDViaKYsGkcB7QAAOFFfXxbBsFYAAAAASUVORK5CYII=", "sculk_charge_4":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAO0lEQVR42mMYvIA1KfY/MiZLM8OkqWAM45NkgOb91+QbIOnmgWEAUIwkA5A1k2gAwhAMzZQZMAqGMwAA+mpD+6iJFGMAAAAASUVORK5CYII=", "sculk_charge_5":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAPUlEQVR42mMYBaOAKDBp6n+K9Gvef/2fIs0UG0CRF0CaWZNiyTMEpBGEJd08IIaQCmAagTQIk20ACOM1AAAIuSqa3Y3mUwAAAABJRU5ErkJggg==",
+  "sculk_charge_6":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAKUlEQVQ4y2NgGAWjYBQQBViTYv9TpJliAyTdPMgzgFXLCKwZhEFsXOoA0pYOvwu+Nl0AAAAASUVORK5CYII=", "sculk_charge_pop_0":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARklEQVR42mMYBbgBa1Lsf2RMsmaGSVNhGG4ISZo1779GNgCOybZd0s2DBAMwNZNmABQjbNYyQhhADIBqxNBMUTSOJmzcAAAAC19fI0ii0AAAAABJRU5ErkJggg==", "sculk_charge_pop_1":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAQ0lEQVQ4y2NgGMZg0tT/IMyaFAvGpGtGA8QbgkUz8Ybg0UycIfQwAK8aogKKkCV4DSHGhTgNIVYzsiFgg6AJahhnGQD4/C9QvyCD1QAAAABJRU5ErkJggg==",
+  "sculk_charge_pop_2":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAM0lEQVR42mMYzmDS1P9wTCrQvP8arolCzZiuIkszYUMQkpQbQLYXBz6AifE7RYlpGGcZALIoK3U6I/3BAAAAAElFTkSuQmCC", "sculk_charge_pop_3":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAHklEQVR42mMYBTjApKn/h5xmhAF0t4T+YTSaRGkAAAEjETHwyx89AAAAAElFTkSuQmCC", "sculk_soul_0":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAUUlEQVQ4y2NgGAXDGfAKif8XlFYEYxCbLM2sWkZgTLIhIA1sfAJwA0BskBhJBsA0I7uCJC/AbIa5hCQDQADZAJI1I4cDCJMcCxRHI7IhhDQDAH3sNSeergDJAAAAAElFTkSuQmCC",
+  "sculk_soul_1":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAYElEQVQ4y2NgGL5AUFrxPwjzCon/J0szG5/Af1YtI9INAWkAaYRhkl0C0gSzHcYmywBkQ2CuIMn/yGFAkgtACikKRGRDSHI6ugEwQ8hKByAA8gLZmmEGgDBFyZliA4gBAC5kRUWTT01eAAAAAElFTkSuQmCC", "sculk_soul_10":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAKUlEQVQ4y2NgwAESvv76D8IM5AKQZjY+AcoM+Q8EDJQAimwfBaNghAEA5/UVpiL7jtEAAAAASUVORK5CYII=", "sculk_soul_2":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAVUlEQVR42mMYxoBVy+g/CAtKK/7nFRL/T5ZmNj4B0g0BKgRpgmGyDADZjG4ACJNoAEIzyQagaybZCygaYS4CyZFmAGFbCRvCQC4AOhluO0WGDI08AwDUE0PFCxWFzgAAAABJRU5ErkJggg==",
+  "sculk_soul_3":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAT0lEQVQ4y2NgGAU4Aa+Q+H8QFpRWBGOSNbPxCYAxq5YRmCbaEJBCmEZ0TJQhMCeTbQCyv5ENArFBckQbAFOMzAd5jaQYwMUnChBt2yhgAACI3zqM7WIaIQAAAABJRU5ErkJggg==", "sculk_soul_4":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWElEQVR42mMYBdgBG5/Af14hcRRMlmZBaUUQJs0QZMUwA1i1jP7DDCbGBeiaYZg0A4CKEQYgMHHeQDMA5gUQTXpgMi5fA8IgzWADSY5O7vYueGyMJnDsAACR4EC5QHMvIAAAAABJRU5ErkJggg==", "sculk_soul_5":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAV0lEQVR42mMYBdgBG5/AfxjmFRIHY9INQWgm3xCQJkFpRRCGG0KqZnRMvAEwDaxaRnAMMpQk2xmXrwEFJIwm3YCEr79Amkk0AGEISCPY6VADyY+FYZ7sAeLqQvnQLgZAAAAAAElFTkSuQmCC",
+  "sculk_soul_6":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEUAAAD///9g9foBp6wFKjIRGyENEhcGDhBXtUYRAAAAAXRSTlMAQObYZgAAADhJREFUeNpjIBKwlxfAWAlgiskgLB3MUBQOTQMzDIVMw8AMc3UTCCPExCQUzGArdw2A6E5LxW8PAP8SB9hWff4AAAAAAElFTkSuQmCC", "sculk_soul_7":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEUAAAD///9g9foBp6wFKjIRGyENEhcGDhBXtUYRAAAAAXRSTlMAQObYZgAAADZJREFUeNpjwAoUFSA0u6AQVEBcKADMUC8ydgAzzIudISKsxa4MYMBSEpAAYYWGQRmsaQwkAgAT4AaqpikQOQAAAABJRU5ErkJggg==", "sculk_soul_8":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAATElEQVR42mOgGUj4+us/CIBosjSz8QmA9INo0g1hXL7mPxIgywCQzXBXgPggcXIMAdlOngGC0oogjSiayXIF0CDyDUDWTJkho2CQAwAN6Uk0rwVuNAAAAABJRU5ErkJggg==",
+  "sculk_soul_9":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAP0lEQVR42mPABRK+/voPw7jU4NXMxifwHwhANOmGMC5fA9YEAyA+SJxUQxC2kwuABkBsJxfANFNmwCgYBfQAAK1tNZV5rGzBAAAAAElFTkSuQmCC", "sga_a":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAG0lEQVR42mMAgf9AwIAAEA5cCMEkSwBhAz4AAIhUE+2r9x/uAAAAAElFTkSuQmCC", "sga_b":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGElEQVR42mMAgf//GeCADAHCQixABn4AAFH3Dff3WYPFAAAAAElFTkSuQmCC",
+  "sga_c":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFklEQVR42mP4/5+BAACqIChAWA0BewAbpQ3ziDwP/AAAAABJRU5ErkJggg==", "sga_d":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFklEQVR42mP4DwcMOABYDlMQuzpyAQAszBPt4oAkVAAAAABJRU5ErkJggg==", "sga_e":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGElEQVR42mP4/58BDGA0gsFATQE4YMAOAGR4F+k8uqYXAAAAAElFTkSuQmCC",
+  "sga_f":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAE0lEQVR42mP4DwcMOABQBoZpBwBVlQ/xrH31KgAAAABJRU5ErkJggg==", "sga_g":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGElEQVR42mMAgf//GeCAsAALuizxZuAGAF63DfcYMQMcAAAAAElFTkSuQmCC", "sga_h":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFklEQVR42mP4DwcMOABWFRAOqQK4AQCEkBvlhCmpXQAAAABJRU5ErkJggg==",
+  "sga_i":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFElEQVR42mP4/58BFRAUwARUMAMA5ssL9ZIC/XEAAAAASUVORK5CYII=", "sga_j":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFklEQVR42mP4/58BFcAFEIBkFaQbCgBAcgn3Im8BswAAAABJRU5ErkJggg==", "sga_k":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGklEQVR42mMAgf//GeAAjwCCA8dgQLwZuAEAkjwR7/NKbSEAAAAASUVORK5CYII=",
+  "sga_l":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGUlEQVR42mP4/58BFYAEkARhHAIChM3ADwDKBBHvgmaogwAAAABJRU5ErkJggg==", "sga_m":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAF0lEQVR42mP4/58BDIA0DFBfgAXIwA8AOh0P9fdG8iwAAAAASUVORK5CYII=", "sga_n":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAHElEQVR42mP4/58BCIAkDMAFEABNgBR5BBc/AABLkRHvnFZEkgAAAABJRU5ErkJggg==",
+  "sga_o":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFklEQVR42mP4DwUMqACLAFnyCC5+AABtfRPtcioiPgAAAABJRU5ErkJggg==", "sga_p":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAG0lEQVR42mP4/5+BAYiRAVQAwSFLAAEQKnADAJ1NF+lfabhBAAAAAElFTkSuQmCC", "sga_q":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAG0lEQVR42mMAgf//GfCA/3CAJkG0AMIMnDYBAD+rG+X0JlsbAAAAAElFTkSuQmCC",
+  "sga_r":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAE0lEQVR42mP4/58BCIAkTQFBWwCCIgf51s+RYwAAAABJRU5ErkJggg==", "sga_s":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFUlEQVR42mP4/58BFRAjQJYmBnwAACOrD/HphcIEAAAAAElFTkSuQmCC", "sga_t":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFElEQVR42mP4DwcMqIASAQQgVgUA4wcT7bgeb4MAAAAASUVORK5CYII=",
+  "sga_u":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFUlEQVR42mMgBvz/D8J45OGAgVwAAO/CDfMNhyjVAAAAAElFTkSuQmCC", "sga_v":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGElEQVR42mMAgf//GeCAHIH/UICmihQVANAMG+XMyVuGAAAAAElFTkSuQmCC", "sga_w":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAE0lEQVR42mMgDvz/D6GJVk6qNgB2IAX7Au2p3wAAAABJRU5ErkJggg==",
+  "sga_x":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGElEQVR42mP4/58BDGA0A4KLXYBc5fgBAGFtD/FoTBxcAAAAAElFTkSuQmCC", "sga_y":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFElEQVR42mP4/5+BAYgRgJYCuAEA4hYb5TysJ7kAAAAASUVORK5CYII=", "sga_z":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAGklEQVR42mMAgf//GaAAyoVgBBdBUy6AHQAApkQZ582uO5kAAAAASUVORK5CYII=",
+  "shriek":"iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAANklEQVQoz2NgwAIsrz34D8MMhAA2hXg1EzIVQ54oZ6CrI1kTsRpQNNJPE/0Cgux4IjtFkJL2AA0zXcEBvFJpAAAAAElFTkSuQmCC", "small_gust_0":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAHUlEQVR42mOgM1ix8cr/A0fv/cepACQJUkRndwEAwdQNHejNZPAAAAAASUVORK5CYII=", "small_gust_1":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAHElEQVR42mOgLjhw9N5/ECZHAQKs2HjlPwN9AQAgCBC1sZY2YQAAAABJRU5ErkJggg==",
+  "small_gust_2":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAIElEQVR42mOgHjhw9N5/EF6x8cp/nJI4dQN1QRQMDAAAauIXQx7Tp1AAAAAASUVORK5CYII=", "small_gust_3":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAKElEQVR42mOgHlix8cp/UiUR4MDRe/+R2RgaQAJACTiGacCpiCTHAwBJrirt/eYgOwAAAABJRU5ErkJggg==", "small_gust_4":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAKklEQVR42mMgGazYeOX/gaP3wBirAqgk8YpAfLyKUOzG5hacDgSxifIVALGEPzksVnP8AAAAAElFTkSuQmCC",
+  "small_gust_5":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAJklEQVR42mMgGhw4eu8/MsaQXLHxCoogjI/gUB0gTMWUADmSeCsBVGgkKQJrP6AAAAAASUVORK5CYII=", "small_gust_6":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFklEQVR42mMgCazYeOU/COOUZBiqAACjKwmF5FbTQQAAAABJRU5ErkJggg==", "sonic_boom_0":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAASElEQVR42mMYBaNgFIwCagPuLav+D7gDYHjUETqPXw+cA0CWw/BIcwCmI0bLBkqCcDQlD4qUPFqsYjhiIB0yWqiMglEwCqgOAN6SXANdR6y8AAAAAElFTkSuQmCC",
+  "sonic_boom_1":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAACVBMVEUAAAALtKos4+td6WrtAAAAAXRSTlMAQObYZgAAADVJREFUeNpjGAU0BYyMBFWQZwQTE34FTEAAZzJil2dCsEiWZ2BEmA8E+N0NlKdV2IwmMZoCALmgAFlpxMQ1AAAAAElFTkSuQmCC", "sonic_boom_10":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAACVBMVEUAAAAs4+sLtKon+JkQAAAAAXRSTlMAQObYZgAAAG9JREFUeNrVk0EKwDAMw5T8/9GDMUxDCTrPt2LV0CZmqF+xKNZkiD1Plw9QnwD6vl6HmCGxeRXkBGIHgZ4+QyEWP0QALgVIwBKxBUAAagOKTsAa8QtAnukfpV9tw9Jx28LYyunS+tp7cbx6Xl6t/wPBfgFViHXeaQAAAABJRU5ErkJggg==", "sonic_boom_11":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAABlBMVEUAAAAs4+vWu52UAAAAAXRSTlMAQObYZgAAAFJJREFUeNpjoDJgBAPcsgiASx7BwimNSwleAQQXtxCcg0MMl6txWIApjCtoiFaAL2yHiALKw4FwUBOOLMLRTTjBEE5yhBMtZrInJ+Mg1FA5PwMATi8AoRTXoZwAAAAASUVORK5CYII=",
+  "sonic_boom_12":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAs4+vWu52UAAAAAXRSTlMAQObYZgAAAE5JREFUeNoFwbERgCAABLDwciclpYUFY1gyGqM5CmNYmgDOjefGe1CWJUyVodFdtHwwqIGASQKBQCBgUAMBnRZ0ja4yhKkoi/fAc+PcwA/c6whc5N9JAwAAAABJRU5ErkJggg==", "sonic_boom_13":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAACVBMVEUAAAALtKos4+td6WrtAAAAAXRSTlMAQObYZgAAAFpJREFUeNrNkjkOwDAMw0T9/9EFPPSCHQ0dGm4BGXiw9cAG0IALikmfLzqtBaV/9Jp9DogTSBNyELwgB8SAZeAQ2DkQweeAuGe+7XnjS3Xjudn+O4UvPTQvewDSLgDh/V/qWAAAAABJRU5ErkJggg==", "sonic_boom_14":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAACVBMVEUAAAAs4+sLtKon+JkQAAAAAXRSTlMAQObYZgAAADdJREFUeNpjQACtBgjNGAEVYHWAMWBKVGAMDRhDAcEYBIADk4HhYgkYIwBKM8IYqlD/Mq1AmAgAFQkD4jFvJvcAAAAASUVORK5CYII=",
+  "sonic_boom_15":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAQUlEQVR42u3XMREAMAgEwfSxgnJqHFEigpQ4CMxwa+Ao+TPONc1rmuc38ahwh7XxOgAAAABowie+My4e2RIeOYAeyjsi0xYpyr8AAAAASUVORK5CYII=", "sonic_boom_2":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAACVBMVEUAAAAs4+sLtKon+JkQAAAAAXRSTlMAQObYZgAAAC9JREFUeNpjoA9ghTFCHSA009QACIOrESrCgaRcAUIxOi2Aag9rgIqEwpQE0MfhALPyBNmr8viRAAAAAElFTkSuQmCC", "sonic_boom_3":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAACVBMVEUAAAAs4+sLtKon+JkQAAAAAXRSTlMAQObYZgAAACVJREFUeNpjoA/ggjFWNUAZnAFQhmgIYQZrApTBtApm0AL6OBwAtb0E4y++WtIAAAAASUVORK5CYII=",
+  "sonic_boom_4":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAACVBMVEUAAAAs4+sLtKon+JkQAAAAAXRSTlMAQObYZgAAAClJREFUeNpjoDfggtKsQQ0QhmoYlLEUymCaGsUAZURAGa0BUF0L6O1cALIaBq+CuOyaAAAAAElFTkSuQmCC", "sonic_boom_5":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAACVBMVEUAAAAs4+sLtKon+JkQAAAAAXRSTlMAQObYZgAAACFJREFUeNpjGCjABWMoNUAZrAlQBmcAlMHUAVO0YKCcCQBnrAKVvfaUQgAAAABJRU5ErkJggg==", "sonic_boom_6":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAMElEQVR42u3RMQ0AAAgEMXasoJwZR4yIeGQQkquFGgAAeC165JWyK16p6BEVAAC8tsv3CsNhxlPMAAAAAElFTkSuQmCC",
+  "sonic_boom_7":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAALElEQVR42u3RMQ0AIAwAsP1YQTk3jjgRsclYlrQWGgDAePv9jC7rnlQAAOMVkXIFYgcE0CUAAAAASUVORK5CYII=", "sonic_boom_8":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAs4+vWu52UAAAAAXRSTlMAQObYZgAAADlJREFUeNpjIADYHwAJ+R9Awv4PkKj/ByT+/2dgYPz/vwFCMP//fwAngVAH0gY2AGwU2FCw8QTsBwBt5yfr27u+fgAAAABJRU5ErkJggg==", "sonic_boom_9":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAs4+vWu52UAAAAAXRSTlMAQObYZgAAAGVJREFUeNpjQALsD4CEhQyQcH/EwMA4/2cDA1P9PwcGlj/2CgysH/gXMHAfYL7AINzAeIJBvIHxBYM4A8MLBn0Ghi8MegwMJWgEWAKsBKwYrA1sANgosKFg48EWgayEWc7+AMlNAKQbIj+5RQyXAAAAAElFTkSuQmCC",
+  "soul_0":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAT0lEQVQ4y2NgGAXDGUS7WvzPCnIBYxCbLM2ViUFgTLIhIA2mmkpwA0BskBhJBsA0I7uCJC/AbIa5hORwQDaAJNvRwwGESbad4mhENoSQZgBZplAD5p9ItAAAAABJRU5ErkJggg==", "soul_1":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAYUlEQVQ4y2NgGL4gK8jlPwhHu1r8J0uzqabS/8rEININAWkAaYRhkl0C0gSzHcYmywBkQ2CuIMn/yGFAkgtACikKRGRDSHI6ugEwQ8hKByDgaa5DvmaYASBMUXKm2ABiAAB5/GiqcY18NQAAAABJRU5ErkJggg==", "soul_10":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAKUlEQVQ4y2NgwAESvv76D8IM5AKQZlNNJcoM+Q8EDJQAimwfBaNghAEAO8wWAgv6NnAAAAAASUVORK5CYII=",
+  "soul_2":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAV0lEQVR42mMYxqAyMeg/CGcFufyPdrX4T5ZmU00l0g3xNNcBaYJhsgwA2YxuAAiTaABCM8kGoGsmzQtAhRgaQYaC5EgygLCthA0hQzMiHOC2U2TI0MgzAKOGZzAf95gUAAAAAElFTkSuQmCC", "soul_3":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAVklEQVQ4y2NgGAU4gae5zn8QzgpyAWOSNZtqKoFxZWIQmCbaEJBCmEZ0TJQhMCeTbUC0qwXc38gGgdggOaINgClG5oPChqhwAClGtg2dT3RMjCZm4gAAn5pY27WMFpcAAAAASUVORK5CYII=", "soul_4":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAYElEQVQ4y2NgGAVYgae5zv9oVws4BvHJ0pwV5ALGJBkC0wxiwwyoTAz6b6qpRJwhMEXImmGYJANgXkA2AISJDgt0A0BeIMkAWGAyLl8DxiDNIANJjk7u9i54bIwmcOwAADeFXqSfC5ubAAAAAElFTkSuQmCC",
+  "soul_5":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR42mMYBdiBp7nOfxiOdrUAY9INQWgm3xCQpqwgFxCGG0KqZnRMvAEwDZWJQXAM8hZJtjMuX/PfVFMJRpNuQMLXXyDNJBqAMASkEeZ0kIHkx8IwT/YAekxdJAtn6OYAAAAASUVORK5CYII=", "soul_6":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAG1BMVEUAAAD///9g9foBp6x5YVJqUkRbRThJNyw1KSJPX0BZAAAAAXRSTlMAQObYZgAAADdJREFUeNpjIBKwlxfAWAlgiskgLB3MUBQOTQMzDIVMw8AMCw0TCCPExCQUoqfDNQCiu7wUvz0ABosIDaek7Y4AAAAASUVORK5CYII=", "soul_7":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEUAAAD///9g9foBp6xqUkRbRThJNyw1KSLFbm3zAAAAAXRSTlMAQObYZgAAADZJREFUeNpjwAoUFSA0u6AQVEBcKADMUC8ydgAzzIudISJsxa4QNSwlAQkQVmgYlMGaxkAiAAAULgarioZmkQAAAABJRU5ErkJggg==",
+  "soul_8":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAATklEQVQ4y2NgoBVI+PrrPwiAaLI0m2oqgQ0A0SQbwrh8zX9kQJYBIJthrgDxSfYGzBCQ7WQZ4GmuA9ZIlmZkV4AMItsAijRT1ZBRQGMAAKDsTHxIB7nxAAAAAElFTkSuQmCC", "soul_9":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAQklEQVQ4y2NgwAESvv76D8MMpAKQJk9znf8gAKJJNoRx+RqwJhgA8Ul2BUgTWbYjA5ABZNmO7AqyNVPFgFEwCogFANnqN7WpvKAzAAAAAElFTkSuQmCC", "soul_fire_flame":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAANUlEQVR42mNABox9k/8z4AOMy9f8x6so4euv/0BFZCoASQAVgDFO3SAAMwWXArgiXFZgmAAA0d9BiJpfMjwAAAAASUVORK5CYII=",
+  "spark_0":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFUlEQVR42mMgG/z/D8LoQpgqiDMNAEddCffFF71OAAAAAElFTkSuQmCC", "spark_1":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAHElEQVR42mMgG/z/v/n///9IAkAuUAhDBXGmAQDTiBC/p0Ug+QAAAABJRU5ErkJggg==", "spark_2":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAIUlEQVR42mMgDvz/D6cRQpv/A7kIAOJuhgsgVGCagcUCAKXSGLe0HJJHAAAAAElFTkSuQmCC",
+  "spark_3":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAIklEQVR42mMgFmz+////5v9IXLAAQug/mAsCGCrQzMBqPACssyX78j/zXwAAAABJRU5ErkJggg==", "spark_4":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAKElEQVR42mPAAv7/R2ZDqc1Axub/UC6ECcYItVi4EAw36hzUDCy2AACTWi5a/rnkQQAAAABJRU5ErkJggg==", "spark_5":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAJ0lEQVR42mPACf7/R+Fu/v///+b/SFywAEwIyAZzIQBNBZoZWG0BAH79LfMWsa4qAAAAAElFTkSuQmCC",
+  "spark_6":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAJUlEQVR42mPAAv7/R2ZDqc1Axub/UC6ECcYItTAuLhUIM7DYAgCQgS4/Oq37ZgAAAABJRU5ErkJggg==", "spark_7":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAJ0lEQVR42mPACf7/R+Fu/v///+b/SFywAEwIyAZzIQBNBZoZWG0BAH79LfMWsa4qAAAAAElFTkSuQmCC", "spell_0":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAFUlEQVR42mMgG/z/D8LoQpgqiDMNAEddCffFF71OAAAAAElFTkSuQmCC",
+  "spell_1":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAHElEQVR42mMgG/z/f+7///9IAkAuUAhDBXGmAQDsbBEriE8LigAAAABJRU5ErkJggg==", "spell_2":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAIUlEQVR42mMgDvz/D6cRQuf+A7kIAOKegwsgVGCagcUCAL62GSPPxc6YAAAAAElFTkSuQmCC", "spell_3":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAJUlEQVR42mMgDvz/f+4/A8O5////g7kQJgTD1WDhQjCGGVgsAAAI8ieLzxw/FwAAAABJRU5ErkJggg==",
+  "spell_4":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAJUlEQVR42mPAAv7/R2ZDqXNAxrn/UC6ECcYItTAuLhUIM7DYAgDbLS+DEhvZjwAAAABJRU5ErkJggg==", "spell_5":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAJUlEQVR42mPAAv7/R2ZDqXNAxrn/UC6ECcYItTAuLhUIM7DYAgDbLS+DEhvZjwAAAABJRU5ErkJggg==", "spell_6":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAJUlEQVR42mPAAv7/R2ZDqXNAxrn/UC6ECcYItTAuLhUIM7DYAgDbLS+DEhvZjwAAAABJRU5ErkJggg==",
+  "spell_7":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAQAAABuBnYAAAAAJUlEQVR42mPAAv7/R2ZDqXNAxrn/UC6ECcYItTAuLhUIM7DYAgDbLS+DEhvZjwAAAABJRU5ErkJggg==", "splash_0":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGUlEQVR42mMYXsA968x/EC3hAaJxATNMSQASWwapR1s4NQAAAABJRU5ErkJggg==", "splash_1":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFklEQVR42mMYXsA968x/BmKAhAeqQgCneASoLMEAHAAAAABJRU5ErkJggg==",
+  "splash_2":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAEklEQVQYGWMYnkDC48x/BlIAAGZmAizlBMumAAAAAElFTkSuQmCC", "splash_3":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFUlEQVR42mMYXsA968x/BrzADLsCALTyBH7z9OOSAAAAAElFTkSuQmCC", "sulfur_cube_goo":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEUAAAD///////r3+s3s85DU1JDSwIy2kXIL6y+1AAAAAXRSTlMAQObYZgAAAE9JREFUeNpjwArKy6F0iCuYxR5i7BxWAGI4Khu7ghilRirGLukghrGLiWs4iOFs7OoGZoSEuISBGOyhLqFpYF2pYWmpBWADQ0PLYVZgtRkAMIoS7gMUP14AAAAASUVORK5CYII=",
+  "sweep_0":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAM0lEQVR42mMYBaNgFJAO/v9/8Z9SI4CAQmNe/KeCIYPJCEoDlPI4AZEUxcho3hgFwwYAAMYRMyyx3DJ2AAAAAElFTkSuQmCC", "sweep_1":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAQElEQVR42u3TsQ0AMQzDQO4/qbbgt1+lsFIFvt4sDIi1Hhf/4vBQnYYgdzKQQ6QKxfq9kTlVhTJBR+nEHdx6xgfcMY5GknyyWgAAAABJRU5ErkJggg==", "sweep_2":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAARElEQVR42u3TsQkAIAwF0ew/6W1xlmIhatJJXv8PRBKtfQ4nxIchLu5DeAv341wEM8/Cw/wcw8hT1fJHR005gH1w7RsD8pnFVtepBsYAAAAASUVORK5CYII=",
+  "sweep_3":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAATUlEQVR42u3TMQoAIQwF0dz/pHOL2SoICxGSUvJsbP4UgrHW4xATYmtYQWxMWxnswsuc4hSJ3mMh/0Ree1DNAMYAJxATZ4kxhPvh1jM+ziz7afaWh5cAAAAASUVORK5CYII=", "sweep_4":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAQ0lEQVR42u3TsREAMAgCQPeflC1IaRGP09jl+FagM8w+ByYQnBXTZAbsAFX5dQL6nKk6A1G9FTlZbm9ukLED+m3M4gC/ibd7xBMaZwAAAABJRU5ErkJggg==", "sweep_5":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAPklEQVR42u3ToQ0AMAwDwew/qbf4UpNKTcIqH38ZuSI+J5xohOJOPG+CWrv91C1SXxc1Y/GM5TNQOyK3iagDLfB5540S38cAAAAASUVORK5CYII=",
+  "sweep_6":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAN0lEQVR42mMYBaNgmIMX/yGQDI1AANZIjlY6a8bUDmTSUTsCQJ1OPoBop8gAipPMaLYZBaOAAQCM80BmPh1KIgAAAABJRU5ErkJggg==", "sweep_7":"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAALElEQVR42u3SIQEAAAjEwO+flBajA28QOz+3SPppqOIihzrPHUAakM7gfVIWWScXSNOtyo4AAAAASUVORK5CYII=", "trial_omen":"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAJElEQVR42mMAAfUzZ/7DMIaAwLoNYMwAkwVyUGgGFFUggE0VAG6kKVlvNo5kAAAAAElFTkSuQmCC",
+  "trial_spawner_detection_0":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAHUlEQVR42mMgCdyIZPmPV8HPRm3aKUC4gbACUgEAsn8OieXWLlgAAAAASUVORK5CYII=", "trial_spawner_detection_1":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAH0lEQVR42mMgCfxs1P6PV8H/g1P/U2bCjUiW/wz0BwAwawrR4xznJgAAAABJRU5ErkJggg==", "trial_spawner_detection_2":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAHklEQVR42mMgCfw/OPU/XgU/G7XxK7gRyfKfYRACAAI0CC0O3MpZAAAAAElFTkSuQmCC",
+  "trial_spawner_detection_3":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAEklEQVR42mMgCfw/OPU/w7AEANHGA1Xgy9akAAAAAElFTkSuQmCC", "trial_spawner_detection_4":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAEklEQVR42mMgCfx/efM/w7AEAC0dA8FwfvOvAAAAAElFTkSuQmCC", "trial_spawner_detection_ominous_0":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAHUlEQVR42mMgCTBVVf7Hq0B8zRraKUC4gbACUgEA8lgNJxy1UN4AAAAASUVORK5CYII=",
+  "trial_spawner_detection_ominous_1":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAH0lEQVR42mMgCYivWfMfrwLdBw/+U2YCU1Xlfwb6AwB1Tgm9WLRF4gAAAABJRU5ErkJggg==", "trial_spawner_detection_ominous_2":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAHklEQVR42mMgCeg+ePAfrwLxNWvwK2CqqvzPMAgBAFmiB0/IjloVAAAAAElFTkSuQmCC", "trial_spawner_detection_ominous_3":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAEklEQVQYGWMgCeg+ePCfYVgCAHiBAu0f5xehAAAAAElFTkSuQmCC",
+  "trial_spawner_detection_ominous_4":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAEklEQVR42mMgCdz8/+M/w7AEADmPA9An//faAAAAAElFTkSuQmCC", "vault_connection":"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFUlEQVR42mOgM/ifxfAfhAkqoLO7APiYCaErEyqDAAAAAElFTkSuQmCC", "vibration":"iVBORw0KGgoAAAANSUhEUgAAABIAAAB+AgMAAABUlqnlAAAADFBMVEUAAAA51uAIfoENUU6x4QbfAAAAAXRSTlMAQObYZgAAAHJJREFUeNrt0aENAkEUhOEvuwZym+sCh1h5ZWCWICnlmqAEHIISXimUQAkUAOIFLL+eyZ/JeKdex42FEgJdjgPME3QBAP6WT5QTLCUQmdLTF5btER7uVFrOomzIWXZjpa72NCry21sifhlnZiY6Avjlxxft4CErolUBfwAAAABJRU5ErkJggg=="
+};
+/* ==== TEX_BUILTIN_END ==== */
 
 const texSpriteCache = new Map();
 let texStatusOverride = "";
@@ -4792,6 +5083,19 @@ function loadBlobs(list) {
     img.onerror = settle;
     img.src = URL.createObjectURL(item.blob);
   });
+}
+
+/* 内置原版粒子贴图：页面打开即可用，无需手动导入（base64 → Blob → 同一套载入流程） */
+function loadBuiltinTex() {
+  const names = Object.keys(TEX_BUILTIN);
+  if (!names.length) return;
+  const list = names.map(n => {
+    const bin = atob(TEX_BUILTIN[n]);
+    const u8 = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    return { name: n + ".png", blob: new Blob([u8], { type: "image/png" }) };
+  });
+  loadBlobs(list);
 }
 
 /* 解析 zip / jar，取出 assets/minecraft/textures/particle/*.png */
@@ -4908,15 +5212,13 @@ $("#texDirInput").onchange = e => {
   if (e.target.files && e.target.files.length) importFiles(e.target.files);
   e.target.value = "";
 };
+/* 首帧后自动载入内置贴图：不占用首屏渲染，失败也不影响其它功能 */
+requestAnimationFrame(() => { try { loadBuiltinTex(); } catch (_) {} });
 $("#texClearBtn").onclick = () => {
-  TEX.lib.clear();
-  TEX.ready = false;
-  TEX.count = 0;
   texSpriteCache.clear();
   texStatusOverride = "";
-  updateTexStatus();
-  buildInspector();
-  toast("已清除导入的原版贴图");
+  loadBuiltinTex();                      // 丢掉自定义导入，回到内置的原版贴图
+  toast("已恢复内置的原版贴图（共 " + Object.keys(TEX_BUILTIN).length + " 张）");
 };
 /* 拖拽 jar / zip / 图片到画布上也能导入 */
 (function bindDrop() {
@@ -5107,8 +5409,8 @@ function renderDbgCheck() {
     }
     if (l.count > 800) push("w", tag + " 粒子数 " + l.count + " 偏大，循环执行时会明显吃性能。");
     if (TEX.ready && !texKeyOf(l)) push("i", tag + " 未匹配到原版贴图，实机模式会回退成几何近似形状。");
-    if (COLOR_KIND[l.particle] === "dust" && (l.dustScale < 0.3 || l.dustScale > 3)) {
-      push("i", tag + " 的 dust 尺寸倍率 " + l.dustScale + " 偏离常见范围（0.5 ~ 2）。");
+    if (COLOR_KIND[l.particle] === "dust" && (l.pSize < 0.3 || l.pSize > 3)) {
+      push("i", tag + " 的粒子尺寸（dust scale）" + l.pSize + " 格 偏离常见范围（0.5 ~ 2 格）。");
     }
     if (l.shape === "text" && !(l.text || "").trim()) push("w", tag + " 是文字形状但文字内容为空。");
   });
@@ -5187,10 +5489,161 @@ document.addEventListener("keydown", e => {
   syncViewControls();   // 绑定后立即同步一次，避免首帧前数值标签为空
 })();
 
-$("#btnViewCtl").onclick = e => {
-  const hidden = $("#viewCtl").classList.toggle("hidden");
-  e.currentTarget.classList.toggle("on", !hidden);
+/* ---------- 预览设置浮窗：拖动 / 收起 / 记忆位置（活动范围限制在 3D 展示窗口内） ---------- */
+const SCTL_KEY = "particle-studio:previewCtl";
+const sctl = { x: null, y: null, collapsed: false };
+
+function applySctlPos(save) {
+  const el = $("#stageCtl"), host = $("#panelStage");
+  if (!el || !host) return;
+  el.classList.toggle("collapsed", sctl.collapsed);
+  const hw = host.clientWidth, hh = host.clientHeight;
+  if (!(hw > 0 && hh > 0)) return;            // 布局未就绪时先不定位，等 resize 再算
+  const w = el.offsetWidth || 206, h = el.offsetHeight || 40;
+  if (sctl.x == null) { sctl.x = hw - w - 10; sctl.y = 10; }
+  sctl.x = Math.round(clamp(sctl.x, 8, Math.max(8, hw - w - 8)));
+  sctl.y = Math.round(clamp(sctl.y, 8, Math.max(8, hh - h - 8)));
+  el.style.left = sctl.x + "px";
+  el.style.top = sctl.y + "px";
+  if (save) { try { localStorage.setItem(SCTL_KEY, JSON.stringify(sctl)); } catch (_) {} }
+}
+(function initStageCtl() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SCTL_KEY) || "null");
+    if (s) {
+      if (typeof s.x === "number") sctl.x = s.x;
+      if (typeof s.y === "number") sctl.y = s.y;
+      sctl.collapsed = !!s.collapsed;
+    }
+  } catch (_) {}
+  applySctlPos();
+})();
+$("#scMin").onclick = e => {
+  e.stopPropagation();
+  sctl.collapsed = !sctl.collapsed;
+  applySctlPos(true);
 };
+(function bindStageCtlDrag() {
+  const el = $("#stageCtl"), head = $("#scHead"), host = $("#panelStage");
+  if (!el || !head || !host) return;
+  let dragging = false, dx = 0, dy = 0;
+  head.addEventListener("pointerdown", e => {
+    if (e.target && e.target.closest && e.target.closest(".sc-min")) return;
+    const r = el.getBoundingClientRect();
+    dragging = true;
+    dx = e.clientX - r.left; dy = e.clientY - r.top;
+    document.body.style.userSelect = "none";
+    try { head.setPointerCapture(e.pointerId); } catch (_) {}
+    e.preventDefault();
+  });
+  head.addEventListener("pointermove", e => {
+    if (!dragging) return;
+    const hr = host.getBoundingClientRect();
+    sctl.x = e.clientX - hr.left - dx;
+    sctl.y = e.clientY - hr.top - dy;
+    applySctlPos();
+  });
+  const stop = e => {
+    if (!dragging) return;
+    dragging = false;
+    document.body.style.userSelect = "";
+    try { head.releasePointerCapture(e.pointerId); } catch (_) {}
+    applySctlPos(true);
+  };
+  head.addEventListener("pointerup", stop);
+  head.addEventListener("pointercancel", stop);
+  head.addEventListener("dblclick", () => {
+    sctl.x = null; sctl.y = null;
+    applySctlPos(true);
+    toast("预览设置已复位到右上角");
+  });
+})();
+window.addEventListener("resize", () => applySctlPos());
+/* 预览窗口尺寸变化（切画板方位 / 拖分隔条 / 收起面板）后重新收敛浮窗位置，避免被裁掉 */
+new ResizeObserver(() => applySctlPos()).observe($("#panelStage"));
+
+/* ---------- 游戏内光照模拟（只影响预览观感，不写进导出代码） ---------- */
+const LIGHT_ENVS = {
+  day:    { name: "白天 · 露天", block: 15, sky: 15 },
+  dusk:   { name: "黄昏",       block: 15, sky: 7  },
+  night:  { name: "夜晚",       block: 8,  sky: 2  },
+  torch:  { name: "火把照明",   block: 14, sky: 0  },
+  cave:   { name: "洞穴",       block: 4,  sky: 0  },
+  nether: { name: "下界 / 地狱", block: 11, sky: 0 }
+};
+const WEATHERS = {
+  clear:   { name: "晴朗", k: 1 },
+  rain:    { name: "下雨", k: 0.72 },
+  thunder: { name: "雷暴", k: 0.5 }
+};
+/* 原版里自身发光、不吃光照的粒子（FullBright）：再暗也保持全亮 */
+const UNLIT_PARTICLES = new Set([
+  "flame", "soul_fire_flame", "lava", "end_rod", "electric_spark", "glow", "flash",
+  "sculk_soul", "trial_spawner_detection", "ominous_spawning", "sonic_boom", "white_ash"
+]);
+function lightLevel() {                    // 0~1：取方块光与天空光的较大者（天气压低天空光）
+  const wk = (WEATHERS[state.weather] || WEATHERS.clear).k;
+  return clamp(Math.max(state.light, state.skyLight * wk) / 15, 0, 1);
+}
+function sceneLight() {                    // 场景物体（史蒂夫 / 环境压暗）用：暗部留一点保底亮度
+  return 0.12 + 0.88 * Math.pow(lightLevel(), 1.30);
+}
+function particleLight(layer) {            // 粒子用：受总开关与「发光粒子豁免」控制
+  if (!state.litParticles) return 1;
+  if (layer && UNLIT_PARTICLES.has(layer.particle)) return 1;
+  return 0.08 + 0.92 * Math.pow(lightLevel(), 1.35);
+}
+function drawAmbientDark(g, w, h) {        // 暗环境整体压暗（满光照时完全不生效）
+  const d = 0.5 * (1 - lightLevel());
+  if (d <= 0.002) return;
+  g.globalCompositeOperation = "source-over";
+  g.globalAlpha = 1;
+  g.fillStyle = "rgba(0,0,0," + d.toFixed(3) + ")";
+  g.fillRect(0, 0, w, h);
+}
+function syncLightUI() {
+  $("#ltBlock").value = state.light;
+  $("#ltSky").value = state.skyLight;
+  $("#ltBlockV").textContent = state.light + "";
+  $("#ltSkyV").textContent = state.skyLight + "";
+  $("#ltEnv").value = "custom";
+  for (const k in LIGHT_ENVS) {
+    if (LIGHT_ENVS[k].block === state.light && LIGHT_ENVS[k].sky === state.skyLight) { $("#ltEnv").value = k; break; }
+  }
+  $("#ltWeather").value = state.weather;
+  $("#ltLit").checked = !!state.litParticles;
+  $("#ltHint").textContent = "当前光照 " + Math.round(lightLevel() * 15) +
+    "/15 · 仅影响预览观感；游戏内光照由 MC 自动处理，导出代码不含光照。";
+}
+(function initLightUI() {
+  const env = $("#ltEnv");
+  Object.keys(LIGHT_ENVS).forEach(k => {
+    const o = document.createElement("option");
+    o.value = k; o.textContent = LIGHT_ENVS[k].name;
+    env.appendChild(o);
+  });
+  const cu = document.createElement("option");
+  cu.value = "custom"; cu.textContent = "自定义";
+  env.appendChild(cu);
+  const ws = $("#ltWeather");
+  Object.keys(WEATHERS).forEach(k => {
+    const o = document.createElement("option");
+    o.value = k; o.textContent = WEATHERS[k].name;
+    ws.appendChild(o);
+  });
+  env.onchange = () => {
+    const e = LIGHT_ENVS[env.value];
+    if (!e) return;                        // 「自定义」不做事，两个滑条可自由微调
+    state.light = e.block; state.skyLight = e.sky;
+    syncLightUI();
+  };
+  ws.onchange = () => { state.weather = ws.value; syncLightUI(); };
+  $("#ltBlock").oninput = e => { state.light = clamp(+e.target.value | 0, 0, 15); syncLightUI(); };
+  $("#ltSky").oninput = e => { state.skyLight = clamp(+e.target.value | 0, 0, 15); syncLightUI(); };
+  $("#ltLit").onchange = e => { state.litParticles = !!e.target.checked; };
+  $("#scLightHead").onclick = () => $("#scLightSec").classList.toggle("closed");
+  syncLightUI();
+})();
 
 /* =========================================================
    7. 左侧图层列表
@@ -5308,23 +5761,41 @@ $("#btnAddLayer").onclick = () => {
    ========================================================= */
 function rowRange(label, key, min, max, step, fmt) {
   const layer = sel();
-  const v = layer[key];
   const d = document.createElement("div");
   d.className = "row";
-  d.innerHTML = '<label></label><div class="ctl"><input type="range"><span class="val"></span></div>';
+  d.innerHTML = '<label></label><div class="ctl"><input type="range"><input class="val" type="text" inputmode="decimal" spellcheck="false"></div>';
   d.querySelector("label").textContent = label;
-  const inp = d.querySelector("input");
-  inp.min = min; inp.max = max; inp.step = step; inp.value = v;
-  const out = d.querySelector(".val");
+  const inp = d.querySelector("input");      // 滑条
+  const out = d.querySelector(".val");       // 数值输入框
+  inp.min = min; inp.max = max; inp.step = step;
   const show = x => (fmt ? fmt(+x) : String(+x));
-  out.textContent = show(v);
-  inp.oninput = () => {
-    layer[key] = +inp.value;
-    out.textContent = show(inp.value);
-    scheduleCode();
-    syncBoardFromInspector();      // 画板浮窗里的同名控件跟着动（双向同步）
+  const snap = x => {                        // 夹范围 + 按步长对齐（消除浮点尾巴）
+    x = clamp(x, min, max);
+    if (step) x = +(Math.round(x / step) * step).toFixed(6);
+    return x;
   };
-  d._sync = () => { inp.value = layer[key]; out.textContent = show(layer[key]); };
+  const write = x => { layer[key] = x; scheduleCode(); syncBoardFromInspector(); };
+  inp.value = layer[key]; out.value = show(layer[key]);
+  inp.oninput = () => {                      // 拖滑条：数值输入框实时跟随
+    write(snap(+inp.value));
+    out.value = show(layer[key]);
+  };
+  out.oninput = () => {                      // 键入中：有效即生效，但不格式化，避免打断输入
+    const x = parseFloat(out.value);
+    if (!isFinite(x)) return;
+    write(clamp(x, min, max));
+    inp.value = layer[key];
+  };
+  out.onchange = () => {                     // 失焦/回车：格式化并对齐步长，非法值还原
+    const x = parseFloat(out.value);
+    write(isFinite(x) ? snap(x) : layer[key]);
+    inp.value = layer[key]; out.value = show(layer[key]);
+  };
+  out.onkeydown = e => {
+    if (e.key === "Enter") { e.preventDefault(); out.onchange(); if (out.blur) out.blur(); }
+    else if (e.key === "Escape") { out.value = show(layer[key]); if (out.blur) out.blur(); }
+  };
+  d._sync = () => { inp.value = layer[key]; out.value = show(layer[key]); };
   return d;
 }
 function rowSelect(label, key, options) {
@@ -5532,7 +6003,7 @@ function rowParticlePicker() {
     quick: PARTICLE_TOP.slice(0, 8),
     get: () => layer.particle,
     set: k => { layer.particle = k; },
-    onPick: () => { refreshLayerList(); renderParticleNote(); scheduleCode(); }
+    onPick: () => { refreshLayerList(); buildInspector(); renderParticleNote(); scheduleCode(); }
   });
 }
 
@@ -5577,8 +6048,45 @@ function buildInspector() {
     baseRows.push(rowSelect("原版贴图", "texture", texOpts));
   }
   baseRows.push(rowRange("粒子数量", "count", 1, 1200, 1));
-  baseRows.push(rowRange("尺寸（格）", "radius", 0.2, 8, 0.05));
+  baseRows.push(rowRange("图形尺寸（格）", "radius", 0.2, 8, 0.05));
   box.appendChild(group("基础", baseRows));
+
+  // 粒子生成参数（对应 level.addParticle / sendParticles / /particle 的实参）
+  const opts = PARTICLE_OPTS[layer.particle] || [];
+  const pRows = [
+    rowRange("粒子尺寸（格）", "pSize", 0.05, 4, 0.05),
+    rowRange("结束尺寸（格，-1=不变）", "pSizeEnd", -1, 4, 0.05),
+    rowRange("生成扩散 X（格）", "pSpreadX", 0, 8, 0.05),
+    rowRange("生成扩散 Y（格）", "pSpreadY", 0, 8, 0.05),
+    rowRange("生成扩散 Z（格）", "pSpreadZ", 0, 8, 0.05),
+    rowRange("速度倍率", "pSpeed", 0, 3, 0.05)
+  ];
+  if (opts.includes("block")) pRows.push(rowText("方块 ID", "pBlock", "例如 minecraft:stone"));
+  if (opts.includes("item")) pRows.push(rowText("物品 ID", "pItem", "例如 minecraft:diamond"));
+  if (opts.includes("roll")) pRows.push(rowRange("翻转角 roll（弧度）", "pRoll", 0, 6.28, 0.01));
+  if (opts.includes("delay")) pRows.push(rowRange("延迟 delay（tick）", "pDelay", 0, 40, 1));
+  if (opts.includes("duration")) pRows.push(rowRange("飞行时长 duration（tick）", "pDuration", 1, 200, 1));
+  if (opts.includes("power")) pRows.push(rowRange("强度 power", "pPower", 0, 2, 0.05));
+  if (opts.includes("vibration")) {
+    pRows.push(rowRange("振动目标 X", "pVibX", -300, 300, 1));
+    pRows.push(rowRange("振动目标 Y", "pVibY", -64, 320, 1));
+    pRows.push(rowRange("振动目标 Z", "pVibZ", -300, 300, 1));
+    pRows.push(rowRange("到达时间 arrival_in_ticks", "pVibTicks", 1, 200, 1));
+  }
+  const forceRow = rowCheck("强制显示 force（超出 32 格也发送）", "pForce");
+  pRows.push(forceRow);
+  box.appendChild(group("粒子（MC 原版参数）", pRows));
+  const pNote = document.createElement("div");
+  pNote.className = "note";
+  pNote.innerHTML = "<b>粒子尺寸（格）</b>就是 MC 的 dust scale（0.05~4，格）；" +
+    "block / item / 药水类等<b>游戏内没有尺寸参数</b>，这里只改变预览显示大小，导出代码里不会多出无效参数。" +
+    "<br><b>生成扩散 X/Y/Z（格）</b>对应命令的 xDist / yDist / zDist（粒子生成时在这个盒子内随机散布）；" +
+    "<b>速度倍率</b>对应 speed 参数，并同步缩放预览里的运动幅度。" +
+    "<br><b>强制显示 force</b> 只对服务端 <code>/particle</code> 有效（默认 32 格内才可见）；" +
+    "本工具的脚本 / Mod 导出是客户端本地调用，不受该限制。" +
+    "<br>当前粒子 <code>minecraft:" + layer.particle + "</code> 支持的可配参数：" +
+    (opts.length ? "<b>" + opts.join(" / ") + "</b>" : "无专属参数（只需颜色与数量）") + "。";
+  box.appendChild(pNote);
 
   // 形状专属参数
   const need = SHAPE_NEEDS[layer.shape] || [];
@@ -5679,12 +6187,11 @@ function buildInspector() {
     ]),
     rowColor("主色", "color1"),
     rowColor("副色", "color2"),
-    rowRange("初始大小", "size", 1, 30, 0.5),
-    rowRange("结束时大小", "sizeEnd", 0, 30, 0.5),
+    rowRange("显示大小（预览像素）", "size", 1, 30, 0.5),
+    rowRange("显示结束大小（预览像素）", "sizeEnd", 0, 30, 0.5),
     rowRange("整体透明度", "alpha", 0.05, 1, 0.01),
     rowRange("淡入占比", "fadeIn", 0, 0.9, 0.01),
-    rowRange("淡出占比", "fadeOut", 0, 0.9, 0.01),
-    rowRange("dust 尺寸倍率", "dustScale", 0.1, 4, 0.05)
+    rowRange("淡出占比", "fadeOut", 0, 0.9, 0.01)
   ]));
 
   const note = document.createElement("div");
@@ -5884,7 +6391,7 @@ script.registerModule({
       if (layer.colorMode === "single") {
         const c = norm(layer.color1);
         colorField = "    const FX_" + idx + " = new DustParticleOptions(new Vector3f(" +
-          c.map(v => jsF(v)).join(", ") + "), " + jsF(layer.dustScale) + ");";
+          c.map(v => jsF(v)).join(", ") + "), " + jsF(layer.pSize) + ");";
       } else {
         colorArr = "COLOR_" + idx;
         lines.push("    const " + colorArr + " = [");
@@ -5894,12 +6401,12 @@ script.registerModule({
     } else if (kind === "transition") {
       const a = norm(layer.color1), b = norm(layer.color2);
       colorField = "    const FX_" + idx + " = new DustColorTransitionOptions(new Vector3f(" +
-        a.map(v => jsF(v)).join(", ") + "), new Vector3f(" + b.map(v => jsF(v)).join(", ") + "), " + jsF(layer.dustScale) + ");";
+        a.map(v => jsF(v)).join(", ") + "), new Vector3f(" + b.map(v => jsF(v)).join(", ") + "), " + jsF(layer.pSize) + ");";
     }
     if (colorField) lines.push(colorField);
 
     const spawn = kind === "dust" && colorArr
-      ? "new DustParticleOptions(new Vector3f(" + colorArr + "[o], " + colorArr + "[o + 1], " + colorArr + "[o + 2]), " + jsF(layer.dustScale) + ")"
+      ? "new DustParticleOptions(new Vector3f(" + colorArr + "[o], " + colorArr + "[o + 1], " + colorArr + "[o + 2]), " + jsF(layer.pSize) + ")"
       : (kind === "dust" || kind === "transition") ? "FX_" + idx
       : "ParticleTypes." + pname(layer.particle);
 
@@ -5937,6 +6444,15 @@ script.registerModule({
       ", END_BOUNCE = " + (enDef.bounce ? 1 : 0) + ";");
     const useFlow = !!layer.flow;
     if (useFlow) lines.push("        const FLOW = " + jsF(layer.flow) + ";             // 沿线路行进速度（正=正向，负=反向）");
+    // MC 原版生成参数：速度倍率 + 生成扩散（格）
+    const sx = layer.pSpreadX || 0, sy = layer.pSpreadY || 0, sz = layer.pSpreadZ || 0;
+    const spd = layer.pSpeed == null ? 1 : layer.pSpeed;
+    lines.push("        const SPEED = " + jsF(spd) + ";                   // 速度倍率（对应命令的 speed 参数）");
+    if (sx || sy || sz) {
+      lines.push("        const SPREAD_X = " + jsF(sx) + ", SPREAD_Y = " + jsF(sy) +
+        ", SPREAD_Z = " + jsF(sz) + ";   // 生成扩散（格）= 命令的 xDist/yDist/zDist");
+      lines.push("        const jit = (i, s) => { const v = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return (v - Math.floor(v)) * 2.0 - 1.0; };");
+    }
     lines.push("");
     lines.push("        // 启动序列：展开 → 描绘 → 充能 → 释放 → 熄灭间歇（与预览逐字一致）");
     lines.push("        let seqScale = 1.0, seqAlpha = 1.0, seqPulse = 0.0;");
@@ -5979,17 +6495,26 @@ script.registerModule({
     lines.push("                else ph = Math.min(0.999, Math.floor(t * STEPS) / STEPS);");
     lines.push("                if (ph > seqAlpha) continue;                 // 还没轮到它亮（游戏里粒子没有 alpha，只能不生成）");
     lines.push("            }");
-    lines.push("            const k = scale * (1.0 + EXPAND * LIFETIME * t);");
+    lines.push("            const k = scale * (1.0 + EXPAND * SPEED * LIFETIME * t);");
     lines.push("            let x = ux * k, y = uy * k, z = uz * k;");
-    lines.push("            y += RISE * LIFETIME * t;");
+    lines.push("            y += RISE * SPEED * LIFETIME * t;");
     lines.push("            if (WAVE > 0.0) y += WAVE * Math.sin(t * WAVE_FREQ * Math.PI * 2.0);");
     lines.push("            const rx = x * cosSpin - z * sinSpin;");
     lines.push("            const rz = x * sinSpin + z * cosSpin;");
-    lines.push("            // 速度（格/tick）：让游戏内运动与预览一致");
-    lines.push("            const vx = ux * scale * EXPAND / 20.0;");
-    lines.push("            const vy = (RISE + WAVE * WAVE_FREQ * Math.PI * 2.0) / 20.0;");
-    lines.push("            const vz = uz * scale * EXPAND / 20.0;");
-    lines.push("            level.addParticle(" + spawn + ", ox + rx, oy + y, oz + rz, vx, vy, vz);");
+    lines.push("            // 速度（格/tick）：让游戏内运动与预览一致；SPEED 即「速度倍率」");
+    lines.push("            const vx = ux * scale * EXPAND * SPEED / 20.0;");
+    lines.push("            const vy = (RISE + WAVE * WAVE_FREQ * Math.PI * 2.0) * SPEED / 20.0;");
+    lines.push("            const vz = uz * scale * EXPAND * SPEED / 20.0;");
+    // 生成扩散（格）：对应命令的 xDist / yDist / zDist
+    if (sx || sy || sz) {
+      lines.push("            // 生成扩散（格）：粒子在 SPREAD_X/Y/Z 的盒子内随机散布");
+      lines.push("            const jx = " + (sx ? "jit(i, 1.0) * " + jsF(sx) : "0.0") + ";");
+      lines.push("            const jy = " + (sy ? "jit(i, 2.0) * " + jsF(sy) : "0.0") + ";");
+      lines.push("            const jz = " + (sz ? "jit(i, 3.0) * " + jsF(sz) : "0.0") + ";");
+      lines.push("            level.addParticle(" + spawn + ", ox + rx + jx, oy + y + jy, oz + rz + jz, vx, vy, vz);");
+    } else {
+      lines.push("            level.addParticle(" + spawn + ", ox + rx, oy + y, oz + rz, vx, vy, vz);");
+    }
     lines.push("        }");
     lines.push("    }");
     return lines.join("\n");
@@ -6102,7 +6627,7 @@ function buildLayerParts(M, L) {
         ? "new Vector3f(" + c.map(jf).join(", ") + "), new Vector3f(" + norm(layer.color2).map(jf).join(", ") + ")"
         : "new Vector3f(" + c.map(jf).join(", ") + ")";
       const type = kind === "dust" ? M.dust : M.dustTrans;
-      fields.push("    private static final " + type + " FX_" + idx + " = new " + type + "(" + args + ", " + jf(layer.dustScale) + ");");
+      fields.push("    private static final " + type + " FX_" + idx + " = new " + type + "(" + args + ", " + jf(layer.pSize) + ");");
     }
     fields.push("");
   });
@@ -6149,12 +6674,22 @@ function buildLayerParts(M, L) {
     if (kind === "dust") {
       spawn = layer.colorMode === "single"
         ? M.addFn + "(FX_" + idx + ", "
-        : M.addFn + "(new " + M.dust + "(new Vector3f(COLOR_" + idx + "[o], COLOR_" + idx + "[o + 1], COLOR_" + idx + "[o + 2]), " + jf(layer.dustScale) + "), ";
+        : M.addFn + "(new " + M.dust + "(new Vector3f(COLOR_" + idx + "[o], COLOR_" + idx + "[o + 1], COLOR_" + idx + "[o + 2]), " + jf(layer.pSize) + "), ";
     } else if (kind === "transition") {
       spawn = M.addFn + "(FX_" + idx + ", ";
     } else {
       spawn = M.addFn + "(ParticleTypes." + pname(layer.particle) + ", ";
     }
+    // MC 原版生成参数：速度倍率 + 生成扩散（格，= 命令的 xDist/yDist/zDist）
+    const sx = layer.pSpreadX || 0, sy = layer.pSpreadY || 0, sz = layer.pSpreadZ || 0;
+    const spd = layer.pSpeed == null ? 1 : layer.pSpeed;
+    const spreadDecl = (sx || sy || sz)
+      ? "            // 生成扩散（格）：粒子在盒子内确定性散布（与预览、与命令 xDist/yDist/zDist 一致）\n" +
+        "            final double jx = " + (sx ? "jit(i, 1.0) * " + jf(sx) : "0.0") + ";\n" +
+        "            final double jy = " + (sy ? "jit(i, 2.0) * " + jf(sy) : "0.0") + ";\n" +
+        "            final double jz = " + (sz ? "jit(i, 3.0) * " + jf(sz) : "0.0") + ";\n"
+      : "";
+    const spreadArgs = (sx || sy || sz) ? "ox + rx + jx, oy + y + jy, oz + rz + jz, vx, vy, vz);" : "";
 
     return `
     /** 图层 ${idx + 1}：${layer.name} —— 形状 ${layer.shape} / 粒子 minecraft:${layer.particle}${COLOR_KIND[layer.particle] === "transition" && kind === "dust" ? "（当前版本不支持，已降级为单色 dust）" : ""} / ${n} 个
@@ -6166,6 +6701,7 @@ function buildLayerParts(M, L) {
         final double EXPAND = ${jf(layer.expand)};          // 扩散（倍率/秒）
         final double RISE = ${jf(layer.rise)};            // 上升（格/秒）
         final double SPIN = ${jf(layer.spin)};            // 自转（圈/秒）
+        final double SPEED = ${jf(spd)};             // 速度倍率（对应命令的 speed 参数）
         final double WAVE = ${jf(layer.wave)};            // 波浪幅度（格）
         final double WAVE_FREQ = ${jf(layer.waveFreq)};
         final double PULSE = ${jf(layer.pulse)};
@@ -6226,24 +6762,24 @@ ${loopHead}
                 if (ph > seqAlpha) continue;                          // 还没轮到它亮（游戏里粒子没有 alpha，只能不生成）
             }
 
-            final double k = scale * (1.0 + EXPAND * LIFETIME * t);
+            final double k = scale * (1.0 + EXPAND * SPEED * LIFETIME * t);
             double x = ux * k;
-            double y = uy * k + RISE * LIFETIME * t;
+            double y = uy * k + RISE * SPEED * LIFETIME * t;
             double z = uz * k;
             if (WAVE > 0.0) {
                 y += WAVE * Math.sin(t * WAVE_FREQ * Math.PI * 2.0);
             }
-
+${spreadDecl}
             // 自转
             final double rx = x * cosSpin - z * sinSpin;
             final double rz = x * sinSpin + z * cosSpin;
 
-            // 速度（格/tick）：让游戏内的运动与预览一致
-            final double vx = ux * scale * EXPAND / 20.0;
-            final double vy = (RISE + WAVE * WAVE_FREQ * Math.PI * 2.0) / 20.0;
-            final double vz = uz * scale * EXPAND / 20.0;
+            // 速度（格/tick）：让游戏内的运动与预览一致；SPEED 即「速度倍率」
+            final double vx = ux * scale * EXPAND * SPEED / 20.0;
+            final double vy = (RISE + WAVE * WAVE_FREQ * Math.PI * 2.0) * SPEED / 20.0;
+            final double vz = uz * scale * EXPAND * SPEED / 20.0;
 
-            ${M.worldVar}.${spawn}ox + rx, oy + y, oz + rz, vx, vy, vz);
+            ${M.worldVar}.${spawn}${spreadArgs}ox + rx, oy + y, oz + rz, vx, vy, vz);
         }
     }`;
   }).join("\n");
@@ -6263,6 +6799,15 @@ function buildJava(key) {
   if (needDust || needTrans) importList.push("org.joml.Vector3f");
   const imports = importList.sort().map(i => "import " + i + ";").join("\n");
   const parts = buildLayerParts(M, L);
+  // 有图层用到「生成扩散」时，在类里补一个确定性抖动函数（与预览、与 mcfunction 的散布一致）
+  if (L.some(l => (l.pSpreadX || 0) || (l.pSpreadY || 0) || (l.pSpreadZ || 0))) {
+    parts.fields.unshift(
+      "    /** 确定性伪随机：同一粒子索引得到固定偏移（保证每帧稳定、与预览一致） */\n" +
+      "    private static double jit(int i, double s) {\n" +
+      "        final double v = Math.sin(i * 127.1 + s * 311.7) * 43758.5453;\n" +
+      "        return (v - Math.floor(v)) * 2.0 - 1.0;\n" +
+      "    }\n\n");
+  }
 
   const colorNote = L.some(l => !layerKind(l, M.ver))
     ? "\n * 注意：非 dust 类粒子的颜色由游戏内置贴图决定，无法自定义。"
@@ -6438,35 +6983,51 @@ const CMD_CONFIG = {
 const CMD_MANUAL = {
   vibration: {
     note: "vibration 需要 destination 与 arrival_in_ticks 两个参数，且命令里 destination 只支持 block 类型" +
-      "（pos 必须写成整数数组 [I;x,y,z]，实体目标在命令中不可用）。请按需改坐标后删掉行首的 #。",
-    cfg: () => "{destination:{type:\"minecraft:block\",pos:[I;0,64,0]},arrival_in_ticks:20}"
+      "（pos 必须写成整数数组 [I;x,y,z]，实体目标在命令中不可用）。坐标与到达时间取自图层里的「振动目标 / 到达时间」，改完删掉行首的 # 即可。",
+    cfg: l => "{destination:{type:\"minecraft:block\",pos:[I;" + Math.round(l.pVibX || 0) + "," +
+      Math.round(l.pVibY || 0) + "," + Math.round(l.pVibZ || 0) + "]},arrival_in_ticks:" + Math.round(l.pVibTicks || 20) + "}"
   },
   trail: {
     note: "trail 的 target 是绝对坐标（SNBT 里不能用 ~ 相对坐标），color 为 RGB 整数，duration 为飞行时长（tick，1.21.4 起必填）。" +
-      "请把 target 改成粒子要飞向的位置后删掉行首的 #。",
+      "duration 取自图层里的「飞行时长」，把 target 改成粒子要飞向的位置后删掉行首的 #。",
     cfg: l => "{target:[0.0,0.0,0.0],color:" + ((hexToRgb(l.color1)[0] << 16) | (hexToRgb(l.color1)[1] << 8) | hexToRgb(l.color1)[2]) +
-      ",duration:" + Math.round(l.lifetime) + "}"
+      ",duration:" + Math.round(l.pDuration || l.lifetime) + "}"
   }
 };
 
 function cmdParticle(layer, ver) {
   const kind = layerKind(layer, ver);
+  const sc = (+layer.pSize).toFixed(2);
   if (kind === "dust") {
     const c = norm(layer.color1).map(x => x.toFixed(3));
     return ver.snbt
-      ? "minecraft:dust{color:[" + c.join(", ") + "], scale:" + layer.dustScale.toFixed(2) + "}"
-      : "minecraft:dust " + c.join(" ") + " " + layer.dustScale.toFixed(2);
+      ? "minecraft:dust{color:[" + c.join(", ") + "], scale:" + sc + "}"
+      : "minecraft:dust " + c.join(" ") + " " + sc;
   }
   if (kind === "transition") {
     const a = norm(layer.color1).map(x => x.toFixed(3));
     const b = norm(layer.color2).map(x => x.toFixed(3));
     return "minecraft:dust_color_transition{from_color:[" + a.join(", ") + "], to_color:[" + b.join(", ") +
-      "], scale:" + layer.dustScale.toFixed(2) + "}";
+      "], scale:" + sc + "}";
   }
   if (CMD_MANUAL[layer.particle]) {
     return "minecraft:" + layer.particle + (ver.snbt ? CMD_MANUAL[layer.particle].cfg(layer) : "");
   }
-  if (CMD_CONFIG[layer.particle]) return "minecraft:" + layer.particle + (ver.snbt ? CMD_CONFIG[layer.particle] : "");
+  // 有专属参数（方块 / 物品 / roll / delay…）的粒子：用图层里填的值，而不是写死的默认值
+  if (CMD_CONFIG[layer.particle]) {
+    if (!ver.snbt) return "minecraft:" + layer.particle;
+    const p = layer.particle;
+    if (p === "item") return "minecraft:item{item:" + (layer.pItem || "minecraft:diamond") + "}";
+    if (p === "sculk_charge") return "minecraft:sculk_charge{roll:" + (+layer.pRoll || 0).toFixed(2) + "}";
+    if (p === "shriek") return "minecraft:shriek{delay:" + Math.round(layer.pDelay || 0) + "}";
+    return "minecraft:" + p + "{block_state:" + (layer.pBlock || "minecraft:stone") + "}";
+  }
+  if (layer.particle === "effect" || layer.particle === "instant_effect") {
+    const c = hexToRgb(layer.color1);
+    const rgb = (c[0] << 16) | (c[1] << 8) | c[2];
+    return ver.snbt ? "minecraft:" + layer.particle + "{color:" + rgb + ", power:" + (+layer.pPower || 0).toFixed(2) + "}"
+      : "minecraft:" + layer.particle;
+  }
   return "minecraft:" + layer.particle;
 }
 
@@ -6486,14 +7047,17 @@ function cmdNotes(layer, ver) {
 }
 
 function cmdSimplified(layer, ver) {
+  // 扩散范围（格）优先用图层里的「生成扩散 X/Y/Z」；为 0 时退回按图形半径估算，保证命令可用
   const r = Math.max(0.1, layer.radius);
-  const dx = r.toFixed(2);
-  const dy = Math.max(0.2, r * 0.45).toFixed(2);
-  const speed = Math.max(0, layer.rise + layer.expand).toFixed(3);
+  const dx = (layer.pSpreadX > 0 ? layer.pSpreadX : r).toFixed(2);
+  const dy = (layer.pSpreadY > 0 ? layer.pSpreadY : Math.max(0.2, r * 0.45)).toFixed(2);
+  const dz = (layer.pSpreadZ > 0 ? layer.pSpreadZ : r).toFixed(2);
+  const speed = Math.max(0, (layer.rise + layer.expand) * (layer.pSpeed == null ? 1 : layer.pSpeed)).toFixed(3);
+  const force = layer.pForce ? " force" : "";
   const lines = cmdNotes(layer, ver);
   lines.push("# 图层「" + layer.name + "」：形状 " + layer.shape + " · minecraft:" + layer.particle + " · " + Math.round(layer.count) + " 个");
   const cmd = "execute as @a at @s run particle " + cmdParticle(layer, ver) + " ~ ~1 ~ " +
-    dx + " " + dy + " " + dx + " " + speed + " " + Math.round(layer.count) + " force";
+    dx + " " + dy + " " + dz + " " + speed + " " + Math.round(layer.count) + force;
   lines.push(cmdIsManual(layer) ? "# " + cmd + "   # <-- 补全参数后删掉行首的 #" : cmd);
   return lines.join("\n");
 }
