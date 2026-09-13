@@ -1,8 +1,15 @@
 # 简介
 这是一个本地离线网页粒子特效制作工具，在画布上渲染粒子场，内置可视化控制面板，支持实时调整粒子参数、预览效果，支持鼠标交互，可把调好的粒子配置导出，也能直接复制粒子代码嵌入其他网页作为动态背景。 
+
 #水影客户端: https://github.com/ccbluex/liquidbounce
+
 #水影开发指南: https://mintlify.wiki/ccbluex/liquidbounce/advanced/development
+
 #KRS 客户端 （26.2）: https://github.com/Aspw-w/Krs.git
+
+#KRS汉化 客户端 （26.2）：https://github.com/chenf888/Krs-cn.git
+
+
 <img width="920" height="586" alt="{FA461926-728A-48E8-9FEC-7D05DFEFD3B2}" src="https://github.com/user-attachments/assets/191ea94a-2dec-4dc3-a812-7886e303915f" />
 <img width="924" height="572" alt="{368D175A-303A-4535-B43C-9DAFB26AA2BC}" src="https://github.com/user-attachments/assets/de922224-1bbf-4cc8-856f-e7188ba657f1" />
 
